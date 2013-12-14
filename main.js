@@ -44,10 +44,10 @@ game.init = function(){
 			that.loadMedia();
 			that.addKeyListeners();
 			that.conf.nave.y = that.canvas.height - 25;
-			that.nave = that.factory('nave', that);
-			that.nave.addLoopMethod('mover dibujar');
+			that.nave = that.factory('Nave');
+			that.nave.init(that.conf.nave);
 			that.enemigos = that.crearEnemigos();
-			that.loop = that.factory('frameloop', that);
+			that.loop = that.factory('FrameLoop');
 			// falta agregar los mettodos al (loopItems)
 		});
 }
@@ -57,22 +57,10 @@ game.loadMedia = function(){
 	this.assets.fondo = new Image();
 	this.assets.fondo.src = 'space.jpg';
 	this.assets.fondo.onload = function(){
-		// that.loop.loop();
 		that.intervalo = window.setInterval(function(){
-			var nave = that.nave;
-			that.frameLoop(that, nave);
-			that.loopItems[0];
+			that.loop.init.apply(that);
 		},that.conf.general.vel);
 	}
-};
-
-game.frameLoop = function(scope, n){
-	scope.actualizaEnemigos();
-	scope.moverDisparos();
-	scope.drawBackground();
-	n.execLoop();
-	scope.dibujarEnemigos();
-	scope.dibujarDisparos();
 };
 
 game.crearEnemigos = function(){
@@ -102,19 +90,6 @@ game.crearEnemigos = function(){
 	}
 };
 
-game.dibujarEnemigos = function(){
-	for (var i in this.enemigos) {
-		var enemigo = this.enemigos[i];
-		enemigo.dibujar();
-	};
-} 
-game.actualizaEnemigos = function(){
-	for(var i in this.enemigos){
-		var enemigo = this.enemigos[i];
-		if(!enemigo) continue;
-		enemigo.mover();
-	}
-}
 game.keydown = function(e){
 	game.teclado[e.keyCode] = true;
 }
@@ -128,29 +103,39 @@ game.addKeyListeners = function(){
 	q(document).on('keyup', this.keyup);
 };
 
+game.tecladoListener = function(){
+	if(this.teclado[37]){//left
+		this.nave.moverIzquierda.apply(this);
+	}
+	if(this.teclado[39]){//right
+		this.nave.moverDerecha.apply(this);
+	};
+	if(this.teclado[32]){//fire
+		if(!this.tecladoFire){
+			this.nave.fire.apply(this);
+			this.tecladoFire = true;
+		}
+	}else{
+		this.tecladoFire = false;
+	}
+}
+
+game.dibujarEnemigos = function(){
+	for (var i in this.enemigos) {
+		var enemigo = this.enemigos[i];
+		enemigo.dibujar(this);
+	};
+} 
+game.actualizaEnemigos = function(){
+	for(var i in this.enemigos){
+		var enemigo = this.enemigos[i];
+		if(!enemigo) continue;
+		enemigo.mover();
+	}
+}
+
 game.drawBackground = function(){
 	this.ctx.drawImage(this.assets.fondo,0,0);
-};
-
-game.fire = function(shooter){
-	var nave = this.conf.nave,
-		x = nave.x + 9,
-		y = nave.y - 10,
-		width = 3,
-		height = 10;
-	this.disparos.push({
-		x : x,
-		y : y,
-		width : width,
-		height : height,
-		range: {
-			x1 : x,
-			y2 : y,
-			x2 : x + width,
-			y2 : y + height 
-		}
-	});
-	this.nave.disparar();;
 };
 
 game.hit = function(obj){

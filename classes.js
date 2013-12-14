@@ -1,69 +1,75 @@
 var game = window.game || {}
 
+game.clases.FrameLoop = function(){};
 
-game.clases.nave = function(scope){
-	this.nave =  scope.conf.nave;
-	this.scope = scope;
-	this.loopMethods = [];
+game.clases.FrameLoop.prototype.init = function(){
+	this.actualizaEnemigos();
+	this.moverDisparos();
+	this.drawBackground();
+	this.nave.dibujar.apply(this);
+	this.tecladoListener();
+	this.dibujarEnemigos();
+	this.dibujarDisparos();
+}
+game.clases.Nave = function(){
+
 };	
-game.clases.nave.prototype = {
-		dibujar : function(){
-			this.scope.ctx.save();
-			this.scope.ctx.fillStyle = this.nave.fill;
-			this.scope.ctx.fillRect(
-					this.nave.x, 
-					this.nave.y, 
-					this.nave.width, 
-					this.nave.height
-				);
-			this.scope.ctx.restore();
-		},
-		mover : function(){
-			if(this.scope.teclado[37]){
-				this.nave.x -= this.nave.vel;
-				if(this.nave.x < 0) this.nave.x = 0;
-			}
-			if(this.scope.teclado[39]){
-				var limite = this.scope.canvas.width - this.nave.width;
-				this.nave.x += this.nave.vel;
+game.clases.Nave.prototype = {
+	init : function(conf){
+		this.x = conf.x;
+		this.y = conf.y;
+		this.height = conf.height;
+		this.width = conf.width;
+		this.vel = conf.vel;
+		this.fill = conf.fill;
+		this.range = conf.range;
 
-				if(this.nave.x > limite) this.nave.x = limite;
-			};
-			if(this.scope.teclado[32]){
-				if(!this.scope.tecladoFire){
-					this.scope.fire();
-					this.scope.tecladoFire = true;
-				}
-			}else{
-				this.scope.tecladoFire = false;
+		return this;
+	},
+	dibujar : function(){
+		var ship = this.nave;
+		this.ctx.save();
+		this.ctx.fillStyle = ship.fill;
+		this.ctx.fillRect(
+				ship.x, 
+				ship.y, 
+				ship.width, 
+				ship.height
+			);
+		this.ctx.restore();
+	},
+	moverIzquierda : function(){
+		this.nave.x -= this.nave.vel;
+		if(this.nave.x < 0) this.nave.x = 0;
+	},
+	moverDerecha : function(){
+		var limite = this.canvas.width - this.nave.width;
+		this.nave.x += this.nave.vel;
+
+		if(this.nave.x > limite) this.nave.x = limite;
+	},
+	fire : function(){
+		var nave = this.nave,
+			x = nave.x + 9,
+			y = nave.y - 10,
+			width = 3,
+			height = 10;
+		this.disparos.push({
+			x : x,
+			y : y,
+			width : width,
+			height : height,
+			range: {
+				x1 : x,
+				y2 : y,
+				x2 : x + width,
+				y2 : y + height 
 			}
-		},
-		disparar : function(){
-			this.disparo = this.scope.factory('disparo', this.scope);
-		},
-		execLoop : function(method){
-			for(var i  in this.loopMethods){
-				this[this.loopMethods[i]]();	
-			}
-		},
-		addLoopMethod : function(method){
-			var m = method.split(' ');
-			for(var j in m){
-				this.loopMethods.push(m[j]);
-			}
-		},
-		removeLoopMethod : function(method){
-			this.loopMethods = this.loopMethods.filter(function(obj){
-				return obj != method;
-			});
-		},
-		removeAllLoops : function(){
-			this.loopMethods = [];
-		}
+		});
+	}
 }
 
-game.clases.enemigo = function(scope, params){
-	this.scope = scope;
+game.clases.enemigo = function(params){
 	this.x = params.x;
 	this.y = params.y;
 	this.range = {
@@ -77,6 +83,30 @@ game.clases.enemigo = function(scope, params){
 	this.estado = 'vivo';
 	this.contador = params.contador;
 };
+
+game.clases.enemigo.prototype = {
+	crear : function(){
+
+	},
+	dibujar : function(scope){
+		if (this.estado == 'vivo') scope.ctx.fillStyle = 'red';
+		if (this.estado == 'muerto') scope.ctx.fillStyle = 'black';
+		scope.ctx.save();
+		scope.ctx.fillRect(
+				this.x, 
+				this.y, 
+				this.width, 
+				this.height 
+			);
+		scope.ctx.restore();
+	},
+	mover : function(){
+		if(this.estado == 'vivo'){
+			this.contador++;
+			this.x += Math.sin(this.contador * Math.PI / 45) * 1;
+		}
+	},
+}
 game.clases.disparo = function(scope, params){
 	this.scope = scope;
 	this.params = params;
@@ -104,31 +134,6 @@ game.clases.disparo.prototype = {
 	dibujar : function(){}
 }
 
-game.clases.enemigo.prototype = {
-	crear : function(){
-
-	},
-	dibujar : function(){
-		if (this.estado == 'vivo') this.scope.ctx.fillStyle = 'red';
-		if (this.estado == 'muerto') this.scope.ctx.fillStyle = 'black';
-		this.scope.ctx.save();
-		this.scope.ctx.fillRect(
-				this.x, 
-				this.y, 
-				this.width, 
-				this.height 
-			);
-		this.scope.ctx.restore();
-	},
-	mover : function(){
-		if(this.estado == 'vivo'){
-			this.contador++;
-			this.x += Math.sin(this.contador * Math.PI / 45) * 1;
-		}
-	},
-}
-
-
 game.clases.frameloop = function(scope){
 	this.elements = [];
 	this.scope = scope;
@@ -141,9 +146,5 @@ game.clases.frameloop.prototype = {
 };
 
 game.factory = function(type, params){
-	if(params){
-		return new this.clases[type](this, params);
-	}else{
-		return new this.clases[type](this);
-	}
+	return new this.clases[type](params);
 }
