@@ -77,7 +77,4 @@ q.range.comp = function(a,b){
 	}
 };
 
-function MyObject() {} // a first class functional object
-MyObject.prototype.test = function() { alert('OK'); } // OK
-
 
