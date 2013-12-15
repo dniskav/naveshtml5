@@ -3,7 +3,6 @@ var game = window.game || {}
 game.clases.FrameLoop = function(){};
 
 game.clases.FrameLoop.prototype.init = function(){
-	this.actualizaEnemigos();
 	this.drawBackground();
 	this.nave.dibujar.apply(this);
 	this.tecladoListener();
@@ -90,11 +89,19 @@ game.clases.disparo.prototype = {
 	},
 	mover : function(){
 		this.y -= this.vel;
-		this.updateBounds();
 		this.hitTest();
+		this.updateBounds();
 	},
 	dibujar : function(){
-
+		this.scope.ctx.save();
+		this.scope.ctx.fillStyle = 'white';
+		this.scope.ctx.fillRect(
+			this.x, 
+			this.y, 
+			this.width, 
+			this.height
+		);
+		this.scope.ctx.restore();
 	},
 	hitTest : function(){
 		for (var i in this.scope.enemigos) {
@@ -104,8 +111,8 @@ game.clases.disparo.prototype = {
 					hitY = this.range.y1 < enemigo.y2 && this.range.y2 > enemigo.y1;
 
 				if(hitX && hitY){
-					console.log('checking hit ');
-					delete this.scope.enemigos[i];
+					this.scope.enemigos[i].estado = 'muerto';
+					delete this.scope.disparos[this.scope.disparos.indexOf(this)];
 				}
 			}
 		}
@@ -135,8 +142,14 @@ game.clases.enemigo.prototype = {
 
 	},
 	dibujar : function(scope){
+		var that = this;
 		if (this.estado == 'vivo') scope.ctx.fillStyle = 'red';
-		if (this.estado == 'muerto') scope.ctx.fillStyle = 'black';
+		if (this.estado == 'muerto'){
+			scope.ctx.fillStyle = 'blue';
+			window.setTimeout(function(){
+				that.morir(scope);
+			}, 12);
+		} 
 		scope.ctx.save();
 		scope.ctx.fillRect(
 				this.x, 
@@ -150,8 +163,8 @@ game.clases.enemigo.prototype = {
 		if(this.estado == 'vivo'){
 			this.contador++;
 			this.x += Math.sin(this.contador * Math.PI / 45) * 1;
+			this.updateBounds();
 		}
-		this.updateBounds();
 	},
 	updateBounds : function(){
 		this.range = {
@@ -160,6 +173,10 @@ game.clases.enemigo.prototype = {
 			x2 : this.x + this.width,
 			y2 : this.y + this.height
 		};
+	},
+	morir : function(scope){
+		var index = scope.enemigos.indexOf(this);
+		delete scope.enemigos[index];
 	}
 }
 

@@ -121,39 +121,18 @@ game.dibujarEnemigos = function(){
 	for (var i in this.enemigos) {
 		var enemigo = this.enemigos[i];
 		enemigo.dibujar(this);
+		enemigo.mover();
 	};
 } 
-game.actualizaEnemigos = function(){
-	for(var i in this.enemigos){
-		var enemigo = this.enemigos[i];
-		if(!enemigo) continue;
-		enemigo.mover();
-	}
-}
 
 game.drawBackground = function(){
 	this.ctx.drawImage(this.assets.fondo,0,0);
 };
 
-game.hit = function(obj){
-	if(q.range.comp(this.range, obj.range)){
-		return true;
-	}else return false
-}
-
 game.dibujarDisparos = function(){
-	this.ctx.save();
-	this.ctx.fillStyle = 'white';
 	for(var i in this.disparos){
-		var disparo = this.disparos[i];
-		this.ctx.fillRect(
-			disparo.x, 
-			disparo.y, 
-			disparo.width, 
-			disparo.height
-		);
+		this.disparos[i].dibujar();
 	}
-	this.ctx.restore();
 }
 
 game.init();
