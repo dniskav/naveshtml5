@@ -61,20 +61,4 @@ function q(el){
 	return obj;
 };
 
-q.range = function(a,b){
-	var r = [];
-	for (var i = a; i <= b; i++) {
-		r.push(i);
-	};
-	return r;
-};
-
-q.range.comp = function(a,b){
-	for(var ndx in b){
-		if(a.indexOf(b[ndx]) >- 1){
-			return true;
-		}else return false; 
-	}
-};
-
 
