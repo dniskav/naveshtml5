@@ -32,6 +32,7 @@ game = {
 	enemigos : [],
 	disparos : [],
 	teclado : [],
+	touch : false,
 	tecladoFire : false,
 	estado : 'iniciando'
 };
@@ -96,8 +97,12 @@ game.keyup = function(e){
 }
 
 game.addKeyListeners = function(){
+	var that = this;
 	q(document).on('keydown', this.keydown);
 	q(document).on('keyup', this.keyup);
+	q('#game').on('touchstart', function(e){
+		that.nave.fire.apply(that);
+	});
 };
 
 game.tecladoListener = function(){
