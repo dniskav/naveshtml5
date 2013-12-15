@@ -32,6 +32,7 @@ game = {
 	enemigos : [],
 	disparos : [],
 	teclado : [],
+	touch : false,
 	tecladoFire : false,
 	estado : 'iniciando'
 };
