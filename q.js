@@ -1,5 +1,5 @@
 /**
- * simple selector to attach events
+ * simple selector to attach events and set or get the html
  * @param  {string} el string to select element with the css selectors
  * @return {object}    object with the methods
  */
@@ -7,7 +7,7 @@ function q(el){
 	if(typeof el === 'undefined') return;
 	var obj, 
 		element = el,
-		type = (el === document)? document : el.charAt(0),
+		type = (typeof el === 'object')? el : el.charAt(0),
 		on = function(ev, fn){
 			var	el = this;
 			if(el instanceof NodeList){
@@ -26,8 +26,15 @@ function q(el){
 				}
 			};
 			return this;
+		},
 
-		};
+		html = function(html){
+			var	el = this;
+			if(html){
+				el.innerHTML = html;
+				return this;
+			}else return el.innerHTML;
+		}
 
 	if(type === '.' || type === '#'){
 		element = el.substring(1),
@@ -41,19 +48,22 @@ function q(el){
 		case '#':
 			obj = document.getElementById(element);
 			obj.on = on;
+			obj.html = html;
 		break
 		
 		case '.':
 			obj = document.getElementsByClassName(element);
 			obj.on = on;
+			obj.html = html;
 		break
 		
 		case '':
 			obj = document.getElementsByTagName(element);
 			obj.on = on;
+			obj.html = html;
 		break
 
-		case document:
+		default :
 			obj = type;
 			obj.on = on;
 		break
