@@ -6,7 +6,6 @@ game.clases.FrameLoop.prototype.init = function(){
 	this.drawBackground();
 	this.nave.dibujar.apply(this);
 	this.tecladoListener();
-	// this.touchListener();
 	this.dibujarEnemigos();
 	this.dibujarDisparos();
 	for (var ndx in this.disparos) {

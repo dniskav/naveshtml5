@@ -43,7 +43,7 @@ game.init = function(){
 			that.canvas = q('#game');
 			that.ctx = that.canvas.getContext('2d');
 			that.loadMedia();
-			that.addKeyListeners();
+			that.addListeners();
 			that.conf.nave.y = that.canvas.height - 25;
 			that.nave = that.factory('Nave');
 			that.nave.init(that.conf.nave);
@@ -52,9 +52,7 @@ game.init = function(){
 		});
 }
 
-game.accelerometerUpdate = function(e){
-	console.log('event', e);
-}
+
 
 game.loadMedia = function(){
 	var that = this;
@@ -96,13 +94,16 @@ game.keyup = function(e){
 	game.teclado[e.keyCode] = false;
 }
 
-game.addKeyListeners = function(){
+game.addListeners = function(){
 	var that = this;
 	q(document).on('keydown', this.keydown);
 	q(document).on('keyup', this.keyup);
 	q('#game').on('touchstart', function(e){
 		that.nave.fire.apply(that);
 	});
+	q(window).on('DeviceOrientationEvent', function(e){
+		q('#debuger').html(e);
+	})
 };
 
 game.tecladoListener = function(){
