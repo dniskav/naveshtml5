@@ -49,6 +49,7 @@ game.init = function(){
 			that.nave.init(that.conf.nave);
 			that.enemigos = that.crearEnemigos();
 			that.loop = that.factory('FrameLoop');
+			that.debuger = q('#debuger');
 		});
 }
 
@@ -103,7 +104,7 @@ game.addListeners = function(){
 	});
 	q(window).on('devicemotion', function(e){
 		var rot = Math.floor(e.accelerationIncludingGravity.y);
-		q('#debuger').html(rot, that.nave.x);
+		that.debuger.html('rotacion: ' + rot + ' naveX:' + that.nave.x);
 		console.log(rot);
 	})
 };
