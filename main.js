@@ -106,6 +106,11 @@ game.addListeners = function(){
 		var rot = Math.floor(e.accelerationIncludingGravity.y);
 		that.debuger.html('rotacion: ' + rot + ' naveX:' + that.nave.x);
 		console.log(rot);
+		if(rot > 0){
+			that.nave.moverIzquierda.apply(that);
+		}else if(rot < 0){
+			that.nave.moverDerecha.apply(that);
+		}
 	})
 };
 
