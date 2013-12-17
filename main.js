@@ -103,7 +103,7 @@ game.addListeners = function(){
 	});
 	q(window).on('devicemotion', function(e){
 		var rot = Math.floor(e.accelerationIncludingGravity.y);
-		q('#debuger').html(rot);
+		q('#debuger').html(rot, that.nave.x);
 		console.log(rot);
 	})
 };
