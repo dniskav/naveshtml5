@@ -101,8 +101,10 @@ game.addListeners = function(){
 	q('#game').on('touchstart', function(e){
 		that.nave.fire.apply(that);
 	});
-	q(window).on('DeviceOrientationEvent', function(e){
-		q('#debuger').html(e);
+	q(window).on('devicemotion', function(e){
+		var rot = Math.floor(e.accelerationIncludingGravity.y);
+		q('#debuger').html(rot);
+		console.log(rot);
 	})
 };
 
