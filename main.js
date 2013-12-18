@@ -110,7 +110,7 @@ game.addListeners = function(){
 game.addTouchAndMove = function(scope){
 	q(window).on('devicemotion', function(e){
 		var orientation = (window.orientation > 0)? 1: -1,
-			rot = Math.floor((window.orientation == 0)? e.accelerationIncludingGravity.x * -1 : e.accelerationIncludingGravity.y),
+			rot = Math.floor(e.accelerationIncludingGravity.y),
 			pos = rot * orientation;
 		if(pos < 0){
 			scope.nave.moverIzquierda.apply(scope);
