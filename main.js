@@ -109,12 +109,12 @@ game.addListeners = function(){
 
 game.addTouchAndMove = function(scope){
 	q(window).on('devicemotion', function(e){
-		var rot = Math.floor(e.accelerationIncludingGravity.y);
-		scope.debuger.html('oriention: ' + window.hasOwnProperty("orientation"));
-		// console.log(rot);
-		if(rot < 0){
+		var rot = Math.floor(e.accelerationIncludingGravity.y),
+			orientation = (window.orientation > 0)? 1: -1,
+			pos = rot * orientation;
+		if(pos < 0){
 			scope.nave.moverIzquierda.apply(scope);
-		}else if(rot > 0){
+		}else if(pos > 0){
 			scope.nave.moverDerecha.apply(scope);
 		}
 	})
