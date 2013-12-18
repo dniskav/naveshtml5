@@ -102,17 +102,23 @@ game.addListeners = function(){
 	q('#game').on('touchstart', function(e){
 		that.nave.fire.apply(that);
 	});
+	if(window.hasOwnProperty("orientation")){
+		this.addTouchAndMove(that);
+	}
+};
+
+game.addTouchAndMove = function(scope){
 	q(window).on('devicemotion', function(e){
 		var rot = Math.floor(e.accelerationIncludingGravity.y);
-		that.debuger.html('oriention: ' + window.hasOwnProperty("orientation"));
+		scope.debuger.html('oriention: ' + window.hasOwnProperty("orientation"));
 		// console.log(rot);
 		if(rot < 0){
-			that.nave.moverIzquierda.apply(that);
+			scope.nave.moverIzquierda.apply(scope);
 		}else if(rot > 0){
-			that.nave.moverDerecha.apply(that);
+			scope.nave.moverDerecha.apply(scope);
 		}
 	})
-};
+}
 
 game.tecladoListener = function(){
 	if(this.teclado[37]){//left
