@@ -102,13 +102,16 @@ game.addListeners = function(){
 	q('#game').on('touchstart', function(e){
 		that.nave.fire.apply(that);
 	});
-	if(window.DeviceOrientationEvent){
-		q(window).on('devicemotion', function(e){
-			that.debuger.html('alpha:' + e.accelerationIncludingGravity.x * 10);
-			console.log(e.accelerationIncludingGravity);
-			// console.log('x: ', e.x, 'y: ', e.y, 'z: ', e.z);
-		});
-	};
+	q(window).on('devicemotion', function(e){
+		var rot = Math.floor(e.accelerationIncludingGravity.y);
+		that.debuger.html('rotacion: ' + rot + ' naveX:' + that.nave.x);
+		console.log(rot);
+		if(rot < 0){
+			that.nave.moverIzquierda.apply(that);
+		}else if(rot > 0){
+			that.nave.moverDerecha.apply(that);
+		}
+	})
 };
 
 game.tecladoListener = function(){

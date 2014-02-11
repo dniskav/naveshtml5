@@ -39,10 +39,8 @@ function q(el){
 	if(type === '.' || type === '#'){
 		element = el.substring(1),
 		type = el.charAt(0);
-	}else if(type === document){
-		type = document;
-	}else if(type === window){
-		type = window;
+	}else if(type === document || type === window){
+		type = type;
 	}else{
 		type = '';		
 	};
