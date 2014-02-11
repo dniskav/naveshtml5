@@ -49,6 +49,7 @@ game.init = function(){
 			that.nave.init(that.conf.nave);
 			that.enemigos = that.crearEnemigos();
 			that.loop = that.factory('FrameLoop');
+			that.debuger = q('#debuger');
 		});
 }
 
@@ -101,9 +102,13 @@ game.addListeners = function(){
 	q('#game').on('touchstart', function(e){
 		that.nave.fire.apply(that);
 	});
-	q(window).on('DeviceOrientationEvent', function(e){
-		q('#debuger').html(e);
-	})
+	if(window.DeviceOrientationEvent){
+		q(window).on('devicemotion', function(e){
+			that.debuger.html('alpha:' + e.accelerationIncludingGravity.x * 10);
+			console.log(e.accelerationIncludingGravity);
+			// console.log('x: ', e.x, 'y: ', e.y, 'z: ', e.z);
+		});
+	};
 };
 
 game.tecladoListener = function(){

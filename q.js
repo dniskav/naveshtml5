@@ -41,6 +41,8 @@ function q(el){
 		type = el.charAt(0);
 	}else if(type === document){
 		type = document;
+	}else if(type === window){
+		type = window;
 	}else{
 		type = '';		
 	};
