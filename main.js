@@ -78,7 +78,7 @@ game.crearEnemigos = function(){
 				y = this.conf.enemigosYpos,
 				width = this.conf.anchoEnemigos,
 				height = this.conf.altoEnemigos;
-			enemigos.push(this.factory('enemigo',{
+			enemigos.push(this.factory('Enemigo',{
 				x : x,
 				y : y,
 				height : height,

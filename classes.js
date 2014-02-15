@@ -63,7 +63,7 @@ game.clases.Nave.prototype = {
 			y = nave.y - 10,
 			width = 3,
 			height = 10;
-		this.disparos.push(this.factory('disparo', {
+		this.disparos.push(this.factory('Disparo', {
 				shooter : nave.type,
 				x : x,
 				y : y,
@@ -75,7 +75,7 @@ game.clases.Nave.prototype = {
 		);
 	}
 }
-game.clases.disparo = function(params){
+game.clases.Disparo = function(params){
 	this.shooter = params.shooter;
 	this.scope = params.scope;
 	this.x = params.x;
@@ -86,7 +86,7 @@ game.clases.disparo = function(params){
 	this.init();
 };
 
-game.clases.disparo.prototype = {
+game.clases.Disparo.prototype = {
 	init : function(){
 		this.updateBounds();
 	},
@@ -100,8 +100,15 @@ game.clases.disparo.prototype = {
 		this.updateBounds();
 	},
 	dibujar : function(){
+		switch(this.shooter){
+			case "Nave":
+				var color = "white";
+				break
+			case "Enemigo":
+				var color = "red"
+		}
 		this.scope.ctx.save();
-		this.scope.ctx.fillStyle = 'white';
+		this.scope.ctx.fillStyle = color;
 		this.scope.ctx.fillRect(
 			this.x, 
 			this.y, 
@@ -127,7 +134,7 @@ game.clases.disparo.prototype = {
 				}
 			break;
 			case "Enemigo":
-				console.log("Enemy ", this.y2);
+				console.log("Enemy ", this.range.y2);
 			break;
 		}
 	},
@@ -141,7 +148,7 @@ game.clases.disparo.prototype = {
 	}
 }
 
-game.clases.enemigo = function(params){
+game.clases.Enemigo = function(params){
 	this.type = "Enemigo";
 	this.x = params.x;
 	this.y = params.y;
@@ -152,7 +159,7 @@ game.clases.enemigo = function(params){
 	this.crear();
 };
 
-game.clases.enemigo.prototype = {
+game.clases.Enemigo.prototype = {
 	crear : function(){
 
 	},
@@ -196,10 +203,10 @@ game.clases.enemigo.prototype = {
 	fire : function(scope){
 		var clase = this,
 			x = clase.x + 9,
-			y = clase.y + 10,
+			y = clase.y + clase.height,
 			width = 3,
 			height = 10;
-		scope.disparos.push(scope.factory('disparo', {
+		scope.disparos.push(scope.factory('Disparo', {
 				shooter : this.type,
 				x : x,
 				y : y,
