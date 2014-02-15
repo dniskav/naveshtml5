@@ -23,7 +23,11 @@ game = {
 		general : {
 			vel : 24
 		},
-		cantidadEnemigos : 10
+		cantidadEnemigos : 10,
+		enemigosYpos : 10,
+		anchoEnemigos : 20,
+		altoEnemigos : 20,
+		espacioEntreEnemigos : 27
 	},
 	loop : {},
 	loopItems : [],
@@ -63,27 +67,6 @@ game.loadMedia = function(){
 		that.intervalo = window.setInterval(function(){
 			that.loop.init.apply(that);
 		},that.conf.general.vel);
-	}
-};
-
-game.crearEnemigos = function(){
-	if(this.estado == 'iniciando'){
-		var enemigos = [];
-		for (var i = this.conf.cantidadEnemigos - 1; i >= 0; i--) {
-			var x =  5 + (i * 27),
-				y = 20,
-				width = 20,
-				height = 20;
-			enemigos.push(this.factory('enemigo',{
-				x : x,
-				y : y,
-				height : height,
-				width : width,
-				contador : 0
-			}));
-		};
-		this.estado = 'jugando';
-		return enemigos;
 	}
 };
 
@@ -136,6 +119,28 @@ game.tecladoListener = function(){
 		this.tecladoFire = false;
 	}
 }
+
+game.crearEnemigos = function(){
+	if(this.estado == 'iniciando'){
+		var enemigos = [];
+		for (var i = this.conf.cantidadEnemigos - 1; i >= 0; i--) {
+			var x =  5 + (i * this.conf.espacioEntreEnemigos),
+				y = this.conf.enemigosYpos,
+				width = this.conf.anchoEnemigos,
+				height = this.conf.altoEnemigos;
+			enemigos.push(this.factory('Enemigo',{
+				x : x,
+				y : y,
+				height : height,
+				width : width,
+				contador : 0,
+				scope : this
+			}));
+		};
+		this.estado = 'jugando';
+		return enemigos;
+	}
+};
 
 game.dibujarEnemigos = function(){
 	for (var i in this.enemigos) {
