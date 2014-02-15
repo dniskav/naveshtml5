@@ -134,7 +134,7 @@ game.clases.Disparo.prototype = {
 				}
 			break;
 			case "Enemigo":
-				console.log("Enemy ", this.range.y2);
+				// console.log("Enemy ", this.range.y2);
 			break;
 		}
 	},
@@ -156,12 +156,23 @@ game.clases.Enemigo = function(params){
 	this.width = params.width;
 	this.estado = 'vivo';
 	this.contador = params.contador;
-	this.crear();
+	this.scope = params.scope;
+	this.shootingBot();
 };
 
 game.clases.Enemigo.prototype = {
 	crear : function(){
 
+	},
+	shootingBot : function(){		
+			var timer = (Math.random() * 2000) + 600,
+				that = this;
+				this.shootTimer = setTimeout(function(){
+					that.fire(that.scope);
+				if(that.estado == 'vivo'){
+					that.shootingBot();
+				}
+			}, timer);
 	},
 	dibujar : function(scope){
 		var that = this;
@@ -198,6 +209,7 @@ game.clases.Enemigo.prototype = {
 	},
 	morir : function(scope){
 		var index = scope.enemigos.indexOf(this);
+		clearTimeout(this.shootTimer);
 		delete scope.enemigos[index];
 	},
 	fire : function(scope){
