@@ -15,7 +15,7 @@ game.clases.FrameLoop.prototype.init = function(){
 			}catch(err){}
 		}
 		this.disparos = this.disparos.filter(function(disparo){
-			return disparo.y > 0;
+			return disparo.y > 0 && disparo.range.y2 < 160;
 		});
 	}
 }
@@ -31,6 +31,7 @@ game.clases.Nave.prototype = {
 		this.vel = conf.vel;
 		this.fill = conf.fill;
 		this.range = conf.range;
+		this.type = "Nave";
 
 		return this;
 	},
@@ -63,6 +64,7 @@ game.clases.Nave.prototype = {
 			width = 3,
 			height = 10;
 		this.disparos.push(this.factory('disparo', {
+				shooter : nave.type,
 				x : x,
 				y : y,
 				width : width,
@@ -74,6 +76,7 @@ game.clases.Nave.prototype = {
 	}
 }
 game.clases.disparo = function(params){
+	this.shooter = params.shooter;
 	this.scope = params.scope;
 	this.x = params.x;
 	this.y = params.y;
@@ -88,7 +91,11 @@ game.clases.disparo.prototype = {
 		this.updateBounds();
 	},
 	mover : function(){
-		this.y -= this.vel;
+		if(this.shooter == "Nave"){
+			this.y -= this.vel;
+		}else{
+			this.y += this.vel;
+		}
 		this.hitTest();
 		this.updateBounds();
 	},
@@ -104,17 +111,24 @@ game.clases.disparo.prototype = {
 		this.scope.ctx.restore();
 	},
 	hitTest : function(){
-		for (var i in this.scope.enemigos) {
-			if (this.scope.enemigos.length > 0) {
-				var enemigo = this.scope.enemigos[i].range,
-					hitX = this.range.x1 < enemigo.x2 && this.range.x2 > enemigo.x1,
-					hitY = this.range.y1 < enemigo.y2 && this.range.y2 > enemigo.y1;
+		switch(this.shooter){
+			case "Nave":
+				for (var i in this.scope.enemigos) {
+					if (this.scope.enemigos.length > 0) {
+						var enemigo = this.scope.enemigos[i].range,
+							hitX = this.range.x1 < enemigo.x2 && this.range.x2 > enemigo.x1,
+							hitY = this.range.y1 < enemigo.y2 && this.range.y2 > enemigo.y1;
 
-				if(hitX && hitY){
-					this.scope.enemigos[i].estado = 'muerto';
-					delete this.scope.disparos[this.scope.disparos.indexOf(this)];
+						if(hitX && hitY){
+							this.scope.enemigos[i].estado = 'muerto';
+							delete this.scope.disparos[this.scope.disparos.indexOf(this)];
+						}
+					}
 				}
-			}
+			break;
+			case "Enemigo":
+				console.log("Enemy ", this.y2);
+			break;
 		}
 	},
 	updateBounds : function(){
@@ -128,6 +142,7 @@ game.clases.disparo.prototype = {
 }
 
 game.clases.enemigo = function(params){
+	this.type = "Enemigo";
 	this.x = params.x;
 	this.y = params.y;
 	this.height = params.height;
@@ -177,6 +192,23 @@ game.clases.enemigo.prototype = {
 	morir : function(scope){
 		var index = scope.enemigos.indexOf(this);
 		delete scope.enemigos[index];
+	},
+	fire : function(scope){
+		var clase = this,
+			x = clase.x + 9,
+			y = clase.y + 10,
+			width = 3,
+			height = 10;
+		scope.disparos.push(scope.factory('disparo', {
+				shooter : this.type,
+				x : x,
+				y : y,
+				width : width,
+				height : height,
+				vel : scope.conf.disparo.vel,
+				scope : scope
+			})
+		);
 	}
 }
 

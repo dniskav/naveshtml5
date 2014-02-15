@@ -23,7 +23,11 @@ game = {
 		general : {
 			vel : 24
 		},
-		cantidadEnemigos : 10
+		cantidadEnemigos : 10,
+		enemigosYpos : 10,
+		anchoEnemigos : 20,
+		altoEnemigos : 20,
+		espacioEntreEnemigos : 27
 	},
 	loop : {},
 	loopItems : [],
@@ -70,10 +74,10 @@ game.crearEnemigos = function(){
 	if(this.estado == 'iniciando'){
 		var enemigos = [];
 		for (var i = this.conf.cantidadEnemigos - 1; i >= 0; i--) {
-			var x =  5 + (i * 27),
-				y = 20,
-				width = 20,
-				height = 20;
+			var x =  5 + (i * this.conf.espacioEntreEnemigos),
+				y = this.conf.enemigosYpos,
+				width = this.conf.anchoEnemigos,
+				height = this.conf.altoEnemigos;
 			enemigos.push(this.factory('enemigo',{
 				x : x,
 				y : y,
