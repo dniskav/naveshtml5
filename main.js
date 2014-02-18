@@ -160,6 +160,12 @@ game.dibujarDisparos = function(){
 	}
 }
 
+game.stopEnemies = function(){
+	for (var i in this.enemigos) {
+		this.enemigos[i].stop();
+	}
+}
+
 game.init();
 
 

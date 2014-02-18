@@ -4,7 +4,7 @@ game.clases.FrameLoop = function(){};
 
 game.clases.FrameLoop.prototype.init = function(){
 	this.drawBackground();
-	this.nave.dibujar.apply(this);
+	if(this.nave.estado != 'eliminado')this.nave.dibujar.apply(this);
 	this.tecladoListener();
 	this.dibujarEnemigos();
 	this.dibujarDisparos();
@@ -24,6 +24,7 @@ game.clases.Nave = function(){
 };	
 game.clases.Nave.prototype = {
 	init : function(conf){
+		this.estado = 'vivo';
 		this.x = conf.x;
 		this.y = conf.y;
 		this.height = conf.height;
@@ -32,13 +33,23 @@ game.clases.Nave.prototype = {
 		this.fill = conf.fill;
 		this.range = conf.range;
 		this.type = "Nave";
+		this.updateBounds();
 
 		return this;
 	},
 	dibujar : function(){
-		var ship = this.nave;
+		var that = this,
+			ship = this.nave;
+			if(ship.estado == 'eliminado') return;
+
+		if (ship.estado == 'vivo') this.ctx.fillStyle = ship.fill;
+		if (ship.estado == 'muerto'){
+			this.ctx.fillStyle = 'red';
+			window.setTimeout(function(){
+				that.nave.morir();
+			}, 12);
+		};
 		this.ctx.save();
-		this.ctx.fillStyle = ship.fill;
 		this.ctx.fillRect(
 				ship.x, 
 				ship.y, 
@@ -48,14 +59,18 @@ game.clases.Nave.prototype = {
 		this.ctx.restore();
 	},
 	moverIzquierda : function(){
+		if(this.nave.estado == 'muerto') return;
 		this.nave.x -= this.nave.vel;
 		if(this.nave.x < 0) this.nave.x = 0;
+		this.nave.updateBounds();
 	},
 	moverDerecha : function(){
+		if(this.nave.estado == 'muerto') return;
 		var limite = this.canvas.width - this.nave.width;
 		this.nave.x += this.nave.vel;
 
 		if(this.nave.x > limite) this.nave.x = limite;
+		this.nave.updateBounds();
 	},
 	fire : function(){
 		var nave = this.nave,
@@ -63,6 +78,7 @@ game.clases.Nave.prototype = {
 			y = nave.y - 10,
 			width = 3,
 			height = 10;
+		if(nave.estado == 'muerto') return;
 		this.disparos.push(this.factory('Disparo', {
 				shooter : nave.type,
 				x : x,
@@ -73,6 +89,20 @@ game.clases.Nave.prototype = {
 				scope : this
 			})
 		);
+	},
+	updateBounds : function(){
+		this.range = {
+			x1 : this.x,
+			y1 : this.y,
+			x2 : this.x + this.width,
+			y2 : this.y + this.height
+		};
+	},
+	morir : function(){
+		this.estado = 'eliminado';
+	},
+	animMorir : function(){
+
 	}
 }
 game.clases.Disparo = function(params){
@@ -134,7 +164,14 @@ game.clases.Disparo.prototype = {
 				}
 			break;
 			case "Enemigo":
-				// console.log("Enemy ", this.range.y2);
+				var hitX = this.range.x1 < this.scope.nave.range.x2 && this.range.x2 > this.scope.nave.range.x1,
+					hitY = this.range.y1 < this.scope.nave.range.y2 && this.range.y2 > this.scope.nave.range.y1;
+
+					if(hitX && hitY){
+						if(this.scope.nave.estado == 'eliminado') return;
+						this.scope.nave.estado = 'muerto';
+						this.scope.stopEnemies();
+					};				
 			break;
 		}
 	},
@@ -209,7 +246,7 @@ game.clases.Enemigo.prototype = {
 	},
 	morir : function(scope){
 		var index = scope.enemigos.indexOf(this);
-		clearTimeout(this.shootTimer);
+		this.stop();
 		delete scope.enemigos[index];
 	},
 	fire : function(scope){
@@ -228,6 +265,9 @@ game.clases.Enemigo.prototype = {
 				scope : scope
 			})
 		);
+	},
+	stop : function(){
+		clearTimeout(this.shootTimer);
 	}
 }
 
