@@ -59,13 +59,13 @@ game.clases.Nave.prototype = {
 		this.ctx.restore();
 	},
 	moverIzquierda : function(){
-		if(this.nave.estado == 'muerto') return;
+		if(this.nave.estado == 'eliminado') return;
 		this.nave.x -= this.nave.vel;
 		if(this.nave.x < 0) this.nave.x = 0;
 		this.nave.updateBounds();
 	},
 	moverDerecha : function(){
-		if(this.nave.estado == 'muerto') return;
+		if(this.nave.estado == 'eliminado') return;
 		var limite = this.canvas.width - this.nave.width;
 		this.nave.x += this.nave.vel;
 
@@ -78,7 +78,7 @@ game.clases.Nave.prototype = {
 			y = nave.y - 10,
 			width = 3,
 			height = 10;
-		if(nave.estado == 'muerto') return;
+		if(nave.estado == 'eliminado') return;
 		this.disparos.push(this.factory('Disparo', {
 				shooter : nave.type,
 				x : x,
