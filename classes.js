@@ -271,6 +271,45 @@ game.clases.Enemigo.prototype = {
 	}
 }
 
+
+game.clases.Button = function(params){
+	this.x = params.x || 0;
+	this.y = params.y || 0;
+	this.width = params.width || 0;
+	this.height = params.height || 0;
+	this.init();
+};
+
+game.clases.Button.prototype = {
+	init :function(){
+		this.updateBounds();
+	},
+	click : function(callout, scope){
+
+	},
+	press : function(){},
+	release : function(){},
+	hover : function(){},
+	render : function(scope){
+		scope.ctx.save();
+		scope.ctx.fillRect(
+				this.x, 
+				this.y, 
+				this.width, 
+				this.height 
+			);
+		scope.ctx.restore();
+	},
+	updateBounds : function(){
+		this.range = {
+			x1 : this.x,
+			y1 : this.y,
+			x2 : this.x + this.width,
+			y2 : this.y + this.height
+		};
+	},
+};
+
 game.factory = function(type, params){
 	return new this.clases[type](params);
 }

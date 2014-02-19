@@ -53,7 +53,6 @@ game.init = function(){
 			that.nave.init(that.conf.nave);
 			that.enemigos = that.crearEnemigos();
 			that.loop = that.factory('FrameLoop');
-			that.debuger = q('#debuger');
 		});
 }
 
