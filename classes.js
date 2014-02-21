@@ -3,6 +3,7 @@ var game = window.game || {}
 game.clases.FrameLoop = function(){};
 
 game.clases.FrameLoop.prototype.init = function(){
+	var that = this;
 	this.drawBackground();
 	if(this.nave.estado != 'eliminado')this.nave.dibujar.apply(this);
 	this.tecladoListener();
@@ -16,7 +17,7 @@ game.clases.FrameLoop.prototype.init = function(){
 			}catch(err){}
 		}
 		this.disparos = this.disparos.filter(function(disparo){
-			return disparo.y > 0 && disparo.range.y2 < 160;
+			return disparo.y > 0 && disparo.range.y2 < that.canvas.attr('height');
 		});
 	}
 }

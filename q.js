@@ -34,6 +34,15 @@ function q(el){
 				el.innerHTML = html;
 				return this;
 			}else return el.innerHTML;
+		},
+
+		attr = function(attr, value){
+			var el = this;
+			if(value){
+				el[attr] = value;
+				return this;
+			}
+			return el[attr];
 		}
 
 	if(type === '.' || type === '#'){
@@ -49,23 +58,27 @@ function q(el){
 			obj = document.getElementById(element);
 			obj.on = on;
 			obj.html = html;
+			obj.attr = attr;
 		break
 		
 		case '.':
 			obj = document.getElementsByClassName(element);
 			obj.on = on;
 			obj.html = html;
+			obj.attr = attr;
 		break
 		
 		case '':
 			obj = document.getElementsByTagName(element);
 			obj.on = on;
 			obj.html = html;
+			obj.attr = attr;
 		break
 
 		default :
 			obj = type;
 			obj.on = on;
+			obj.attr = attr;
 		break
 	} 
 	return obj;
