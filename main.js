@@ -29,6 +29,7 @@ game = {
 		altoEnemigos : 20,
 		espacioEntreEnemigos : 27
 	},
+	libreria : [],
 	loop : {},
 	loopItems : [],
 	nave : {},
@@ -164,6 +165,12 @@ game.stopEnemies = function(){
 		this.enemigos[i].stop();
 	}
 }
+
+game.dibujarLibreria = function(){
+	for (var i in this.libreria) {
+		this.libreria[i].render(this);
+	}
+};
 
 game.init();
 

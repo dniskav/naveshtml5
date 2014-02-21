@@ -8,6 +8,7 @@ game.clases.FrameLoop.prototype.init = function(){
 	this.tecladoListener();
 	this.dibujarEnemigos();
 	this.dibujarDisparos();
+	this.dibujarLibreria();
 	for (var ndx in this.disparos) {
 		if (this.disparos.length > 0) {
 			try {
@@ -277,6 +278,8 @@ game.clases.Button = function(params){
 	this.y = params.y || 0;
 	this.width = params.width || 0;
 	this.height = params.height || 0;
+	this.color = params.color || 'white';
+	this.text = params.text || {};
 	this.init();
 };
 
@@ -291,6 +294,7 @@ game.clases.Button.prototype = {
 	release : function(){},
 	hover : function(){},
 	render : function(scope){
+		scope.ctx.fillStyle = this.color;
 		scope.ctx.save();
 		scope.ctx.fillRect(
 				this.x, 
@@ -298,6 +302,11 @@ game.clases.Button.prototype = {
 				this.width, 
 				this.height 
 			);
+		scope.ctx.fillStyle = this.text.color;
+		scope.ctx.textBaseline = this.text.baseLine;
+		scope.ctx.font = this.text.font;
+		scope.ctx.textAlign = this.text.textAlign;
+  		scope.ctx.fillText(this.text.caption, (this.x + this.width/2), (this.y + this.height/2) );
 		scope.ctx.restore();
 	},
 	updateBounds : function(){
