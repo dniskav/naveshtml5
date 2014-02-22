@@ -11,8 +11,8 @@ game = {
 		nave : {
 			x : 100,
 			y : 0,
-			height : 20,
-			width : 20,
+			height : 50,
+			width : 50,
 			vel : 6,
 			fill : '#FFFFFF',
 			range : 0
@@ -25,9 +25,8 @@ game = {
 		},
 		cantidadEnemigos : 10,
 		enemigosYpos : 10,
-		anchoEnemigos : 20,
-		altoEnemigos : 20,
-		espacioEntreEnemigos : 27
+		anchoEnemigos : 50,
+		altoEnemigos : 50,
 	},
 	libreria : [],
 	loop : {},
@@ -123,8 +122,10 @@ game.tecladoListener = function(){
 game.crearEnemigos = function(){
 	if(this.estado == 'iniciando'){
 		var enemigos = [];
-		for (var i = this.conf.cantidadEnemigos - 1; i >= 0; i--) {
-			var x =  5 + (i * this.conf.espacioEntreEnemigos),
+		for (var i = 0; i < this.conf.cantidadEnemigos; i++) {
+
+			var w = this.conf.anchoEnemigos,
+				x =  ((w + (w/2)) * i) +  (w/2),
 				y = this.conf.enemigosYpos,
 				width = this.conf.anchoEnemigos,
 				height = this.conf.altoEnemigos;
