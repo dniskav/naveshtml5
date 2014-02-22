@@ -91,7 +91,7 @@ game.clases.Nave.prototype = {
 				y : y,
 				width : width,
 				height : height,
-				vel : this.conf.disparo.vel,
+				vel : disparo.vel,
 				scope : this
 			})
 		);
@@ -192,6 +192,7 @@ game.clases.Disparo.prototype = {
 }
 
 game.clases.Enemigo = function(params){
+	this.conf = params.conf;
 	this.type = "Enemigo";
 	this.x = params.x;
 	this.y = params.y;
@@ -259,17 +260,18 @@ game.clases.Enemigo.prototype = {
 	},
 	fire : function(scope){
 		var clase = this,
-			x = clase.x + 9,
+			conf = clase.conf.disparo,
+			x = clase.x + (clase.width / 2),
 			y = clase.y + clase.height,
-			width = 3,
-			height = 10;
+			width = conf.w,
+			height = conf.h;
 		scope.disparos.push(scope.factory('Disparo', {
 				shooter : this.type,
 				x : x,
 				y : y,
 				width : width,
 				height : height,
-				vel : scope.conf.disparo.vel,
+				vel : clase.conf.disparo.vel,
 				scope : scope
 			})
 		);

@@ -22,18 +22,25 @@ game = {
 				h : 10
 			},
 		},
-		disparo : {
-			vel : 2,
-			w : 3,
-			h : 10
+		enemigo : {
+			x : 100,
+			y : 0,
+			height : 50,
+			width : 50,
+			vel : 6,
+			fill : '#FF0000',
+			range : 0,
+			disparo : {
+				vel : 2,
+				w : 3,
+				h : 10
+			}	
 		},
 		general : {
 			vel : 24
 		},
 		cantidadEnemigos : 10,
-		enemigosYpos : 10,
-		anchoEnemigos : 50,
-		altoEnemigos : 50,
+		enemigosYpos : 10
 	},
 	libreria : [],
 	loop : {},
@@ -111,7 +118,7 @@ game.addListeners = function(){
 			return  matchY && matchX;
 		});
 		if(libreriaOjb[0]) libreriaOjb[0].click();
-		console.log(libreriaOjb);
+		// console.log(libreriaOjb);
 	});
 	q(document).on('keydown', this.keydown);
 	q(document).on('keyup', this.keyup);
@@ -158,12 +165,14 @@ game.crearEnemigos = function(){
 		var enemigos = [];
 		for (var i = 0; i < this.conf.cantidadEnemigos; i++) {
 
-			var w = this.conf.anchoEnemigos,
+			var	conf = this.conf.enemigo,
+				w = conf.width,
 				x =  ((w + (w/2)) * i) +  (w/2),
 				y = this.conf.enemigosYpos,
-				width = this.conf.anchoEnemigos,
-				height = this.conf.altoEnemigos;
+				width = conf.width,
+				height = conf.height;
 			enemigos.push(this.factory('Enemigo',{
+				conf : conf,
 				x : x,
 				y : y,
 				height : height,
