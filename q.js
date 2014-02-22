@@ -1,5 +1,5 @@
 /**
- * simple selector to attach events
+ * simple selector to attach events and set or get the html
  * @param  {string} el string to select element with the css selectors
  * @return {object}    object with the methods
  */
@@ -7,7 +7,7 @@ function q(el){
 	if(typeof el === 'undefined') return;
 	var obj, 
 		element = el,
-		type = (el === document)? document : el.charAt(0),
+		type = (typeof el === 'object')? el : el.charAt(0),
 		on = function(ev, fn){
 			var	el = this;
 			if(el instanceof NodeList){
@@ -26,14 +26,30 @@ function q(el){
 				}
 			};
 			return this;
+		},
 
-		};
+		html = function(html){
+			var	el = this;
+			if(html){
+				el.innerHTML = html;
+				return this;
+			}else return el.innerHTML;
+		},
+
+		attr = function(attr, value){
+			var el = this;
+			if(value){
+				el[attr] = value;
+				return this;
+			}
+			return el[attr];
+		}
 
 	if(type === '.' || type === '#'){
 		element = el.substring(1),
 		type = el.charAt(0);
-	}else if(type === document){
-		type = document;
+	}else if(type === document || type === window){
+		type = type;
 	}else{
 		type = '';		
 	};
@@ -41,43 +57,31 @@ function q(el){
 		case '#':
 			obj = document.getElementById(element);
 			obj.on = on;
+			obj.html = html;
+			obj.attr = attr;
 		break
 		
 		case '.':
 			obj = document.getElementsByClassName(element);
 			obj.on = on;
+			obj.html = html;
+			obj.attr = attr;
 		break
 		
 		case '':
 			obj = document.getElementsByTagName(element);
 			obj.on = on;
+			obj.html = html;
+			obj.attr = attr;
 		break
 
-		case document:
+		default :
 			obj = type;
 			obj.on = on;
+			obj.attr = attr;
 		break
 	} 
 	return obj;
 };
-
-q.range = function(a,b){
-	var r = [];
-	for (var i = a; i <= b; i++) {
-		r.push(i);
-	};
-	return r;
-};
-
-q.range.comp = function(a,b){
-	for(var ndx in b){
-		if(a.indexOf(b[ndx]) >- 1){
-			return true;
-		}else return false; 
-	}
-};
-
-function MyObject() {} // a first class functional object
-MyObject.prototype.test = function() { alert('OK'); } // OK
 
 

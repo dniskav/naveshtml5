@@ -11,20 +11,38 @@ game = {
 		nave : {
 			x : 100,
 			y : 0,
-			height : 20,
-			width : 20,
+			height : 50,
+			width : 50,
 			vel : 6,
 			fill : '#FFFFFF',
-			range : 0
+			range : 0,
+			disparo : {
+				vel : 2,
+				w : 3,
+				h : 10
+			},
 		},
-		disparo : {
-			vel : 2
+		enemigo : {
+			x : 100,
+			y : 0,
+			height : 50,
+			width : 50,
+			vel : 6,
+			fill : '#FF0000',
+			range : 0,
+			disparo : {
+				vel : 2,
+				w : 3,
+				h : 10
+			}	
 		},
 		general : {
 			vel : 24
 		},
-		cantidadEnemigos : 10
+		cantidadEnemigos : 10,
+		enemigosYpos : 10
 	},
+	libreria : [],
 	loop : {},
 	loopItems : [],
 	nave : {},
@@ -32,89 +50,56 @@ game = {
 	enemigos : [],
 	disparos : [],
 	teclado : [],
+	touch : false,
 	tecladoFire : false,
 	estado : 'iniciando'
 };
 
 game.init = function(){
 	var that = this,
-		load = window.addEventListener('load', function(){
+		load = window.addEventListener('load', function(){ 
+			var startButton = that.factory('Button', {
+				x : 350, y : 200, width : 100, height : 50, color : 'white', 
+				text : {
+					color: 'gray', 
+					font: "normal 12px Arial", 
+					caption: 'Ipsum..', 
+					baseLine : 'middle', 
+					textAlign: 'center'
+				}, 
+				click : {
+					callout: that.start, 
+					scope: that
+				} 
+			});
 			that.canvas = q('#game');
 			that.ctx = that.canvas.getContext('2d');
 			that.loadMedia();
-			that.addKeyListeners();
-			that.conf.nave.y = that.canvas.height - 25;
-			that.nave = that.factory('nave', that);
-			that.nave.addLoopMethod('mover dibujar');
+			that.addListeners();
+			that.conf.nave.y = that.canvas.height - that.conf.nave.height - (that.conf.nave.height / 4);
+			that.nave = that.factory('Nave');
+			that.nave.init(that.conf.nave);
 			that.enemigos = that.crearEnemigos();
-			that.loop = that.factory('frameloop', that);
-			// falta agregar los mettodos al (loopItems)
+			that.libreria.push(startButton);
+			that.loop = that.factory('FrameLoop');
 		});
 }
+
+game.start = function(){
+	this.estado = 'jugando';
+};
 
 game.loadMedia = function(){
 	var that = this;
 	this.assets.fondo = new Image();
 	this.assets.fondo.src = 'space.jpg';
 	this.assets.fondo.onload = function(){
-		// that.loop.loop();
 		that.intervalo = window.setInterval(function(){
-			var nave = that.nave;
-			that.frameLoop(that, nave);
-			that.loopItems[0];
+			that.loop.init.apply(that);
 		},that.conf.general.vel);
 	}
 };
 
-game.frameLoop = function(scope, n){
-	scope.actualizaEnemigos();
-	scope.moverDisparos();
-	scope.drawBackground();
-	n.execLoop();
-	scope.dibujarEnemigos();
-	scope.dibujarDisparos();
-};
-
-game.crearEnemigos = function(){
-	if(this.estado == 'iniciando'){
-		var enemigos = [];
-		for (var i = this.conf.cantidadEnemigos - 1; i >= 0; i--) {
-			var x =  5 + (i * 27),
-				y = 10,
-				width = 20,
-				height = 20;
-			enemigos.push(this.factory('enemigo',{
-				x : x,
-				y : y,
-				range: {
-					x1 : x,
-					y1 : y,
-					x2 : x + width,
-					y2 : y + height 
-				},
-				height : height,
-				width : width,
-				contador : 0
-			}));
-		};
-		this.estado = 'jugando';
-		return enemigos;
-	}
-};
-
-game.dibujarEnemigos = function(){
-	for (var i in this.enemigos) {
-		var enemigo = this.enemigos[i];
-		enemigo.dibujar();
-	};
-} 
-game.actualizaEnemigos = function(){
-	for(var i in this.enemigos){
-		var enemigo = this.enemigos[i];
-		if(!enemigo) continue;
-		enemigo.mover();
-	}
-}
 game.keydown = function(e){
 	game.teclado[e.keyCode] = true;
 }
@@ -123,68 +108,112 @@ game.keyup = function(e){
 	game.teclado[e.keyCode] = false;
 }
 
-game.addKeyListeners = function(){
+game.addListeners = function(){
+	var that = this;
+	that.canvas.on('click', function(e){
+		// console.log('coords: ', e.layerX, e.layerY);
+		var libreriaOjb = that.libreria.filter(function(item){
+			var matchX = e.layerX > item.x &&   e.layerX < (item.x + item.width),
+				matchY = e.layerY > item.y &&   e.layerY < (item.y + item.height);
+			return  matchY && matchX;
+		});
+		if(libreriaOjb[0]) libreriaOjb[0].click();
+		// console.log(libreriaOjb);
+	});
 	q(document).on('keydown', this.keydown);
 	q(document).on('keyup', this.keyup);
+	q('#game').on('touchstart', function(e){
+		that.nave.fire.apply(that);
+	});
+	if(window.hasOwnProperty("orientation")){
+		this.addTouchAndMove(that);
+	}
 };
+
+game.addTouchAndMove = function(scope){
+	q(window).on('devicemotion', function(e){
+		var orientation = (window.orientation > 0)? 1: -1,
+			rot = Math.floor(e.accelerationIncludingGravity.y),
+			pos = rot * orientation;
+		if(pos < 0){
+			scope.nave.moverIzquierda.apply(scope);
+		}else if(rot > 0){
+			scope.nave.moverDerecha.apply(scope);
+		}
+	})
+}
+
+game.tecladoListener = function(){
+	if(this.teclado[37]){//left
+		this.nave.moverIzquierda.apply(this);
+	}
+	if(this.teclado[39]){//right
+		this.nave.moverDerecha.apply(this);
+	};
+	if(this.teclado[32]){//fire
+		if(!this.tecladoFire){
+			this.nave.fire.apply(this);
+			this.tecladoFire = true;
+		}
+	}else{
+		this.tecladoFire = false;
+	}
+}
+
+game.crearEnemigos = function(){
+	if(this.estado == 'iniciando'){
+		var enemigos = [];
+		for (var i = 0; i < this.conf.cantidadEnemigos; i++) {
+
+			var	conf = this.conf.enemigo,
+				w = conf.width,
+				x =  ((w + (w/2)) * i) +  (w/2),
+				y = this.conf.enemigosYpos,
+				width = conf.width,
+				height = conf.height;
+			enemigos.push(this.factory('Enemigo',{
+				conf : conf,
+				x : x,
+				y : y,
+				height : height,
+				width : width,
+				contador : 0,
+				scope : this
+			}));
+		};
+		return enemigos;
+	}
+};
+
+game.dibujarEnemigos = function(){
+	for (var i in this.enemigos) {
+		var enemigo = this.enemigos[i];
+		enemigo.dibujar(this);
+		enemigo.mover();
+	};
+} 
 
 game.drawBackground = function(){
 	this.ctx.drawImage(this.assets.fondo,0,0);
 };
 
-game.fire = function(shooter){
-	var nave = this.conf.nave,
-		x = nave.x + 9,
-		y = nave.y - 10,
-		width = 3,
-		height = 10;
-	this.disparos.push({
-		x : x,
-		y : y,
-		width : width,
-		height : height,
-		range: {
-			x1 : x,
-			y2 : y,
-			x2 : x + width,
-			y2 : y + height 
-		}
-	});
-	this.nave.disparar();;
-};
-
-game.hit = function(obj){
-	if(q.range.comp(this.range, obj.range)){
-		return true;
-	}else return false
-}
-
 game.dibujarDisparos = function(){
-	this.ctx.save();
-	this.ctx.fillStyle = 'white';
 	for(var i in this.disparos){
-		var disparo = this.disparos[i];
-		this.ctx.fillRect(
-			disparo.x, 
-			disparo.y, 
-			disparo.width, 
-			disparo.height
-		);
+		this.disparos[i].dibujar();
 	}
-	this.ctx.restore();
 }
 
-game.moverDisparos = function(){
-	for(var i in this.disparos){
-		var disparo = this.disparos[i];
-		disparo.y -= this.conf.disparo.vel;
-		disparo.range.y1 = disparo.y;
-		disparo.range.y2 = disparo.y + 10;
-	};
-	this.disparos = this.disparos.filter(function(disparo){
-		return disparo.y > 0;
-	});
+game.stopEnemies = function(){
+	for (var i in this.enemigos) {
+		this.enemigos[i].stop();
+	}
 }
+
+game.dibujarLibreria = function(){
+	for (var i in this.libreria) {
+		this.libreria[i].render(this);
+	}
+};
 
 game.init();
 
