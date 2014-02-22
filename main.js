@@ -48,7 +48,7 @@ game.init = function(){
 			that.ctx = that.canvas.getContext('2d');
 			that.loadMedia();
 			that.addListeners();
-			that.conf.nave.y = that.canvas.height - 25;
+			that.conf.nave.y = that.canvas.height - that.conf.nave.height - (that.conf.nave.height / 4);
 			that.nave = that.factory('Nave');
 			that.nave.init(that.conf.nave);
 			that.enemigos = that.crearEnemigos();
