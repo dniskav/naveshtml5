@@ -283,6 +283,7 @@ game.clases.Enemigo.prototype = {
 
 
 game.clases.Button = function(params){
+	this.scope = params.scope;
 	this.x = params.x || 0;
 	this.y = params.y || 0;
 	this.width = params.width || 0;
@@ -298,9 +299,12 @@ game.clases.Button.prototype = {
 		this.updateBounds();
 	},
 	click : function(){
-		this.clickOpt.callout.apply(this.clickOpt.scope);
+		this.clickOpt.callout(this);
 	},
 	press : function(){
+	},
+	remove : function(){
+		delete this.scope.libreria[this.scope.libreria.indexOf(this)];
 	},
 	release : function(){},
 	hover : function(){},

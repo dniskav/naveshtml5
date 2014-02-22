@@ -59,7 +59,7 @@ game.init = function(){
 	var that = this,
 		load = window.addEventListener('load', function(){ 
 			var startButton = that.factory('Button', {
-				x : 350, y : 200, width : 100, height : 50, color : 'white', 
+				x : 350, y : 200, width : 100, height : 50, color : 'white', scope : that,
 				text : {
 					color: 'gray', 
 					font: "normal 12px Arial", 
@@ -68,7 +68,10 @@ game.init = function(){
 					textAlign: 'center'
 				}, 
 				click : {
-					callout: that.start, 
+					callout: function(el){
+						that.start();
+						el.remove();
+					}, 
 					scope: that
 				} 
 			});
@@ -118,7 +121,6 @@ game.addListeners = function(){
 			return  matchY && matchX;
 		});
 		if(libreriaOjb[0]) libreriaOjb[0].click();
-		// console.log(libreriaOjb);
 	});
 	q(document).on('keydown', this.keydown);
 	q(document).on('keyup', this.keyup);
