@@ -10,15 +10,17 @@ game.clases.FrameLoop.prototype.init = function(){
 	this.dibujarEnemigos();
 	this.dibujarDisparos();
 	this.dibujarLibreria();
-	for (var ndx in this.disparos) {
-		if (this.disparos.length > 0) {
-			try {
-				this.disparos[ndx].mover();
-			}catch(err){}
+	if(this.estado == 'jugando'){
+		for (var ndx in this.disparos) {
+			if (this.disparos.length > 0) {
+				try {
+					this.disparos[ndx].mover();
+				}catch(err){}
+			}
+			this.disparos = this.disparos.filter(function(disparo){
+				return disparo.y > 0 && disparo.range.y2 < that.canvas.attr('height');
+			});
 		}
-		this.disparos = this.disparos.filter(function(disparo){
-			return disparo.y > 0 && disparo.range.y2 < that.canvas.attr('height');
-		});
 	}
 }
 game.clases.Nave = function(){
@@ -61,13 +63,13 @@ game.clases.Nave.prototype = {
 		this.ctx.restore();
 	},
 	moverIzquierda : function(){
-		if(this.nave.estado == 'eliminado') return;
+		if(this.nave.estado == 'eliminado' || this.estado != 'jugando') return;
 		this.nave.x -= this.nave.vel;
 		if(this.nave.x < 0) this.nave.x = 0;
 		this.nave.updateBounds();
 	},
 	moverDerecha : function(){
-		if(this.nave.estado == 'eliminado') return;
+		if(this.nave.estado == 'eliminado' || this.estado != 'jugando') return;
 		var limite = this.canvas.width - this.nave.width;
 		this.nave.x += this.nave.vel;
 
@@ -80,7 +82,7 @@ game.clases.Nave.prototype = {
 			y = nave.y - 10,
 			width = 3,
 			height = 10;
-		if(nave.estado == 'eliminado') return;
+		if(nave.estado == 'eliminado' || this.estado != 'jugando') return;
 		this.disparos.push(this.factory('Disparo', {
 				shooter : nave.type,
 				x : x,
@@ -204,14 +206,16 @@ game.clases.Enemigo.prototype = {
 
 	},
 	shootingBot : function(){		
-			var timer = (Math.random() * 2000) + 600,
-				that = this;
-				this.shootTimer = setTimeout(function(){
+		var timer = (Math.random() * 2000) + 600,
+			that = this;
+			this.shootTimer = setTimeout(function(){
+				if(that.scope.estado == 'jugando') {
 					that.fire(that.scope);
-				if(that.estado == 'vivo'){
-					that.shootingBot();
 				}
-			}, timer);
+			if(that.estado == 'vivo'){
+				that.shootingBot();
+			}
+		}, timer);
 	},
 	dibujar : function(scope){
 		var that = this;
@@ -281,6 +285,7 @@ game.clases.Button = function(params){
 	this.height = params.height || 0;
 	this.color = params.color || 'white';
 	this.text = params.text || {};
+	this.clickOpt = params.click;
 	this.init();
 };
 
@@ -288,10 +293,11 @@ game.clases.Button.prototype = {
 	init :function(){
 		this.updateBounds();
 	},
-	click : function(callout, scope){
-
+	click : function(){
+		this.clickOpt.callout.apply(this.clickOpt.scope);
 	},
-	press : function(){},
+	press : function(){
+	},
 	release : function(){},
 	hover : function(){},
 	render : function(scope){

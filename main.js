@@ -43,7 +43,21 @@ game = {
 
 game.init = function(){
 	var that = this,
-		load = window.addEventListener('load', function(){
+		load = window.addEventListener('load', function(){ 
+			var startButton = that.factory('Button', {
+				x : 350, y : 200, width : 100, height : 50, color : 'white', 
+				text : {
+					color: 'gray', 
+					font: "normal 12px Arial", 
+					caption: 'Ipsum..', 
+					baseLine : 'middle', 
+					textAlign: 'center'
+				}, 
+				click : {
+					callout: that.start, 
+					scope: that
+				} 
+			});
 			that.canvas = q('#game');
 			that.ctx = that.canvas.getContext('2d');
 			that.loadMedia();
@@ -52,11 +66,14 @@ game.init = function(){
 			that.nave = that.factory('Nave');
 			that.nave.init(that.conf.nave);
 			that.enemigos = that.crearEnemigos();
+			that.libreria.push(startButton);
 			that.loop = that.factory('FrameLoop');
 		});
 }
 
-
+game.start = function(){
+	this.estado = 'jugando';
+};
 
 game.loadMedia = function(){
 	var that = this;
@@ -79,6 +96,16 @@ game.keyup = function(e){
 
 game.addListeners = function(){
 	var that = this;
+	that.canvas.on('click', function(e){
+		// console.log('coords: ', e.layerX, e.layerY);
+		var libreriaOjb = that.libreria.filter(function(item){
+			var matchX = e.layerX > item.x &&   e.layerX < (item.x + item.width),
+				matchY = e.layerY > item.y &&   e.layerY < (item.y + item.height);
+			return  matchY && matchX;
+		});
+		if(libreriaOjb[0]) libreriaOjb[0].click();
+		console.log(libreriaOjb);
+	});
 	q(document).on('keydown', this.keydown);
 	q(document).on('keyup', this.keyup);
 	q('#game').on('touchstart', function(e){
@@ -138,7 +165,6 @@ game.crearEnemigos = function(){
 				scope : this
 			}));
 		};
-		this.estado = 'jugando';
 		return enemigos;
 	}
 };
