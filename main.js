@@ -15,10 +15,17 @@ game = {
 			width : 50,
 			vel : 6,
 			fill : '#FFFFFF',
-			range : 0
+			range : 0,
+			disparo : {
+				vel : 2,
+				w : 3,
+				h : 10
+			},
 		},
 		disparo : {
-			vel : 2
+			vel : 2,
+			w : 3,
+			h : 10
 		},
 		general : {
 			vel : 24

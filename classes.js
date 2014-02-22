@@ -28,6 +28,7 @@ game.clases.Nave = function(){
 };	
 game.clases.Nave.prototype = {
 	init : function(conf){
+		this.conf = conf;
 		this.estado = 'vivo';
 		this.x = conf.x;
 		this.y = conf.y;
@@ -78,10 +79,11 @@ game.clases.Nave.prototype = {
 	},
 	fire : function(){
 		var nave = this.nave,
-			x = nave.x + 9,
-			y = nave.y - 10,
-			width = 3,
-			height = 10;
+			disparo = nave.conf.disparo,
+			x = nave.x + (nave.width/2),
+			y = nave.y - disparo.h,
+			width = disparo.w,
+			height = disparo.h;
 		if(nave.estado == 'eliminado' || this.estado != 'jugando') return;
 		this.disparos.push(this.factory('Disparo', {
 				shooter : nave.type,
