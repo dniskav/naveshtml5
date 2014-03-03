@@ -43,9 +43,19 @@ function q(el){
 				return this;
 			}
 			return el[attr];
+		},
+
+		append = function(element){
+			var el = this;
+			if(typeof element === 'string'){
+				el.innerHTML = element;
+			}else{
+				el.appendChild(element);
+			}
+			return this;
 		}
 
-	if(type === '.' || type === '#'){
+	if(new RegExp('[\#.<]').test(type)){
 		element = el.substring(1),
 		type = el.charAt(0);
 	}else if(type === document || type === window){
@@ -54,34 +64,31 @@ function q(el){
 		type = '';		
 	};
 	switch(type){
+		case '<':
+			var ht = new DOMParser(),
+				obj = ht.parseFromString(element,"text/xml").childNodes[0];
+		break
+
 		case '#':
 			obj = document.getElementById(element);
-			obj.on = on;
-			obj.html = html;
-			obj.attr = attr;
 		break
 		
 		case '.':
 			obj = document.getElementsByClassName(element);
-			obj.on = on;
-			obj.html = html;
-			obj.attr = attr;
 		break
 		
 		case '':
 			obj = document.getElementsByTagName(element);
-			obj.on = on;
-			obj.html = html;
-			obj.attr = attr;
 		break
 
 		default :
 			obj = type;
-			obj.on = on;
-			obj.attr = attr;
 		break
-	} 
+	};
+	
+	obj.on = on;
+	obj.html = html;
+	obj.attr = attr;
+	obj.append = append;
 	return obj;
 };
-
-

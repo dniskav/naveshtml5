@@ -1,6 +1,7 @@
 var game = window.game || {};
 
 game = {
+	gameContainer : '',
 	canvas : {},
 	ctx : {},
 	assets : {
@@ -75,6 +76,8 @@ game.init = function(){
 					scope: that
 				} 
 			});
+			that.gameContainer = q('#game-container');
+			that.gameContainer.append("<canvas id='game' width='800' height='400'>Tu navegador no soporta canvas</canvas>");
 			that.canvas = q('#game');
 			that.ctx = that.canvas.getContext('2d');
 			that.loadMedia();
