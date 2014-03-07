@@ -288,7 +288,7 @@ game.clases.Button = function(params){
 	this.y = params.y || 0;
 	this.width = params.width || 0;
 	this.height = params.height || 0;
-	this.color = params.color || 'white';
+	this.color = params.color || {n : 'silver', h : 'gray', p : 'white'};
 	this.text = params.text || {};
 	this.clickOpt = params.click;
 	this.init();
@@ -297,19 +297,37 @@ game.clases.Button = function(params){
 game.clases.Button.prototype = {
 	init :function(){
 		this.updateBounds();
+		this.color.act = this.color.n;
+		this.text.color.act = this.text.color.n;
+	},
+	defaultState : function(){
+		this.init();
 	},
 	click : function(){
+		// this.color.act = this.color.p;
 		this.clickOpt.callout(this);
 	},
-	press : function(){
+	mousedown : function(){
+		this.color.act = this.color.p;
+		this.text.color.act = this.text.color.p;
 	},
 	remove : function(){
 		delete this.scope.libreria[this.scope.libreria.indexOf(this)];
 	},
-	release : function(){},
-	hover : function(){},
+	mouseup : function(){
+		this.color.act = this.color.n;
+		this.text.color.act = this.text.color.n;
+	},
+	out : function(){
+		this.color.act = this.color.n;
+		this.text.color.act = this.text.color.n;
+	},
+	hover : function(){
+		this.color.act = this.color.h;
+		this.text.color.act = this.text.color.h;
+	},
 	render : function(scope){
-		scope.ctx.fillStyle = this.color;
+		scope.ctx.fillStyle = this.color.act;
 		scope.ctx.save();
 		scope.ctx.fillRect(
 				this.x, 
@@ -317,7 +335,7 @@ game.clases.Button.prototype = {
 				this.width, 
 				this.height 
 			);
-		scope.ctx.fillStyle = this.text.color;
+		scope.ctx.fillStyle = this.text.color.act;
 		scope.ctx.textBaseline = this.text.baseLine;
 		scope.ctx.font = this.text.font;
 		scope.ctx.textAlign = this.text.textAlign;

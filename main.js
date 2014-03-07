@@ -60,9 +60,19 @@ game.init = function(){
 	var that = this,
 		load = window.addEventListener('load', function(){ 
 			var startButton = that.factory('Button', {
-				x : 350, y : 200, width : 100, height : 50, color : 'white', scope : that,
+				x : 350, y : 200, width : 100, height : 50, 
+				color : {
+					n : 'white',
+					h : 'gray',
+					p : 'blue'
+				}, 
+				scope : that,
 				text : {
-					color: 'gray', 
+					color : {
+						n : 'silver',
+						h : 'white',
+						p : 'red'
+					},  
 					font: "normal 12px Arial", 
 					caption: 'Ipsum..', 
 					baseLine : 'middle', 
@@ -116,14 +126,41 @@ game.keyup = function(e){
 
 game.addListeners = function(){
 	var that = this;
-	that.canvas.on('click', function(e){
+	that.canvas.on('click mousemove mousedown mouseup', function(e){
 		// console.log('coords: ', e.layerX, e.layerY);
 		var libreriaOjb = that.libreria.filter(function(item){
 			var matchX = e.layerX > item.x &&   e.layerX < (item.x + item.width),
 				matchY = e.layerY > item.y &&   e.layerY < (item.y + item.height);
 			return  matchY && matchX;
 		});
-		if(libreriaOjb[0]) libreriaOjb[0].click();
+		switch(e.type){
+			case 'click':
+				if(libreriaOjb[0]) {
+					libreriaOjb[0].click()
+				};
+			break;
+
+			case 'mousemove':
+				for (var ndx in that.libreria) {
+					that.libreria[ndx].defaultState();
+				};
+				if(libreriaOjb[0]) {
+					libreriaOjb[0].hover();
+				};
+			break;
+
+			case 'mousedown':
+				if(libreriaOjb[0]) {
+					libreriaOjb[0].mousedown();
+				};
+			break;
+
+			case 'mouseup':
+				if(libreriaOjb[0]) {
+					libreriaOjb[0].mouseup();
+				};
+			break;
+		}
 	});
 	q(document).on('keydown', this.keydown);
 	q(document).on('keyup', this.keyup);

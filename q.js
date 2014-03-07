@@ -9,20 +9,27 @@ function q(el){
 		element = el,
 		type = (typeof el === 'object')? el : el.charAt(0),
 		on = function(ev, fn){
-			var	el = this;
+			var	el = this,
+				evs = ev.split(' '),
+				eventsIterator = function(method, evs, fn, bool){
+					var acum;
+					for (var ndx in evs) {
+						method(evs[ndx], fn, bool);
+					}
+				};
 			if(el instanceof NodeList){
 				for(var i = 0; i < el.length; i++){
 					if(el[i].addEventListener){
-						el[i].addEventListener(ev, fn, false);
+						eventsIterator(el[i].addEventListener, evs, fn, false);
 					}else if(el[i].attachEvent){
-						el[i].attachEvent(ev, fn);
+						eventsIterator(el[i].attachEvent, evs, fn);
 					}
 				}
 			}else{
 				if(el.addEventListener){
-					el.addEventListener(ev, fn, false);
+					eventsIterator(el.addEventListener, evs, fn, false);
 				}else if(el.attachEvent){
-					el.attachEvent(ev, fn);
+					eventsIterator(el[i].attachEvent, evs, fn);
 				}
 			};
 			return this;
