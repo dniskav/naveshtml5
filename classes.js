@@ -47,13 +47,18 @@ game.clases.Nave.prototype = {
 			ship = this.nave;
 			if(ship.estado == 'eliminado') return;
 
-		if (ship.estado == 'vivo') this.ctx.fillStyle = ship.fill;
+		if (ship.estado == 'vivo') this.ctx.fillStyle = ship.conf.colors.fill;
 		if (ship.estado == 'muerto'){
 			this.ctx.fillStyle = 'red';
 			window.setTimeout(function(){
 				that.nave.morir();
 			}, 12);
 		};
+		this.ctx.strokeStyle = ship.conf.colors.stroke;
+        this.ctx.shadowColor   = ship.conf.colors.shadows.c;
+        this.ctx.shadowOffsetX = ship.conf.colors.shadows.x;
+        this.ctx.shadowOffsetY = ship.conf.colors.shadows.y;
+        this.ctx.shadowBlur    = ship.conf.colors.shadows.b;
 		this.ctx.save();
 		this.ctx.fillRect(
 				ship.x, 
@@ -61,6 +66,12 @@ game.clases.Nave.prototype = {
 				ship.width, 
 				ship.height
 			);
+		this.ctx.strokeRect(
+			ship.x, 
+			ship.y, 
+			ship.width, 
+			ship.height 
+		);
 		this.ctx.restore();
 	},
 	moverIzquierda : function(){
@@ -196,8 +207,8 @@ game.clases.Enemigo = function(params){
 	this.type = "Enemigo";
 	this.x = params.x;
 	this.y = params.y;
-	this.height = params.height;
-	this.width = params.width;
+	this.height = params.conf.height;
+	this.width = params.conf.width;
 	this.estado = 'vivo';
 	this.contador = params.contador;
 	this.scope = params.scope;
@@ -222,15 +233,27 @@ game.clases.Enemigo.prototype = {
 	},
 	dibujar : function(scope){
 		var that = this;
-		if (this.estado == 'vivo') scope.ctx.fillStyle = 'red';
+		if (this.estado == 'vivo') scope.ctx.fillStyle = this.conf.colors.fill;
 		if (this.estado == 'muerto'){
 			scope.ctx.fillStyle = 'blue';
 			window.setTimeout(function(){
 				that.morir(scope);
 			}, 12);
-		} 
+		};
+		scope.ctx.strokeStyle = this.conf.colors.stroke;
 		scope.ctx.save();
+        scope.ctx.shadowColor   = this.conf.colors.shadows.c;
+        scope.ctx.shadowOffsetX = this.conf.colors.shadows.x;
+        scope.ctx.shadowOffsetY = this.conf.colors.shadows.y;
+        scope.ctx.shadowBlur    = this.conf.colors.shadows.b;
+
 		scope.ctx.fillRect(
+				this.x, 
+				this.y, 
+				this.width, 
+				this.height 
+			);
+		scope.ctx.strokeRect(
 				this.x, 
 				this.y, 
 				this.width, 

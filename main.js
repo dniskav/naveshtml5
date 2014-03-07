@@ -15,7 +15,16 @@ game = {
 			height : 50,
 			width : 50,
 			vel : 6,
-			fill : '#FFFFFF',
+			colors :{
+				fill : '#FFFFFF',
+				stroke : '#AAAAAA',
+				shadows : {
+					c : 'rgba(0,0,0,0.8)',
+					x : 0,
+					y : 0,
+					b : 10
+				}
+			},
 			range : 0,
 			disparo : {
 				vel : 2,
@@ -29,7 +38,16 @@ game = {
 			height : 50,
 			width : 50,
 			vel : 6,
-			fill : '#FF0000',
+			colors :{
+				fill : '#FF0000',
+				stroke : '#AA0000',
+				shadows : {
+					c : 'rgba(0,0,0,0.8)',
+					x : 0,
+					y : 0,
+					b : 10
+				}
+			},
 			range : 0,
 			disparo : {
 				vel : 2,
@@ -217,8 +235,6 @@ game.crearEnemigos = function(){
 				conf : conf,
 				x : x,
 				y : y,
-				height : height,
-				width : width,
 				contador : 0,
 				scope : this
 			}));
