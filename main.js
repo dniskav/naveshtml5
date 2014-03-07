@@ -9,6 +9,12 @@ game = {
 	},
 	intervalo : {},
 	conf : {
+		shadows : {
+			c : 'rgba(0,0,0,0.8)',
+			x : 0,
+			y : 0,
+			b : 10
+		},
 		nave : {
 			x : 100,
 			y : 0,
@@ -108,6 +114,10 @@ game.init = function(){
 			that.gameContainer.append("<canvas id='game' width='800' height='400'>Tu navegador no soporta canvas</canvas>");
 			that.canvas = q('#game');
 			that.ctx = that.canvas.getContext('2d');
+			that.ctx.shadowColor   = that.conf.shadows.c;
+	        that.ctx.shadowOffsetX = that.conf.shadows.x;
+	        that.ctx.shadowOffsetY = that.conf.shadows.y;
+	        that.ctx.shadowBlur    = that.conf.shadows.b;
 			that.loadMedia();
 			that.addListeners();
 			that.conf.nave.y = that.canvas.height - that.conf.nave.height - (that.conf.nave.height / 4);

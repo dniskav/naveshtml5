@@ -55,17 +55,13 @@ game.clases.Nave.prototype = {
 			}, 12);
 		};
 		this.ctx.strokeStyle = ship.conf.colors.stroke;
-        this.ctx.shadowColor   = ship.conf.colors.shadows.c;
-        this.ctx.shadowOffsetX = ship.conf.colors.shadows.x;
-        this.ctx.shadowOffsetY = ship.conf.colors.shadows.y;
-        this.ctx.shadowBlur    = ship.conf.colors.shadows.b;
 		this.ctx.save();
 		this.ctx.fillRect(
-				ship.x, 
-				ship.y, 
-				ship.width, 
-				ship.height
-			);
+			ship.x, 
+			ship.y, 
+			ship.width, 
+			ship.height
+		);
 		this.ctx.strokeRect(
 			ship.x, 
 			ship.y, 
@@ -242,10 +238,6 @@ game.clases.Enemigo.prototype = {
 		};
 		scope.ctx.strokeStyle = this.conf.colors.stroke;
 		scope.ctx.save();
-        scope.ctx.shadowColor   = this.conf.colors.shadows.c;
-        scope.ctx.shadowOffsetX = this.conf.colors.shadows.x;
-        scope.ctx.shadowOffsetY = this.conf.colors.shadows.y;
-        scope.ctx.shadowBlur    = this.conf.colors.shadows.b;
 
 		scope.ctx.fillRect(
 				this.x, 
@@ -362,6 +354,10 @@ game.clases.Button.prototype = {
 		scope.ctx.textBaseline = this.text.baseLine;
 		scope.ctx.font = this.text.font;
 		scope.ctx.textAlign = this.text.textAlign;
+		scope.ctx.shadowColor   = 'rgba(0,0,0,0)';
+        scope.ctx.shadowOffsetX = 0;
+        scope.ctx.shadowOffsetY = 0;
+        scope.ctx.shadowBlur    = 0;
   		scope.ctx.fillText(this.text.caption, (this.x + this.width/2), (this.y + this.height/2) );
 		scope.ctx.restore();
 	},
