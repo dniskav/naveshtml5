@@ -47,20 +47,27 @@ game.clases.Nave.prototype = {
 			ship = this.nave;
 			if(ship.estado == 'eliminado') return;
 
-		if (ship.estado == 'vivo') this.ctx.fillStyle = ship.fill;
+		if (ship.estado == 'vivo') this.ctx.fillStyle = ship.conf.colors.fill;
 		if (ship.estado == 'muerto'){
 			this.ctx.fillStyle = 'red';
 			window.setTimeout(function(){
 				that.nave.morir();
 			}, 12);
 		};
+		this.ctx.strokeStyle = ship.conf.colors.stroke;
 		this.ctx.save();
 		this.ctx.fillRect(
-				ship.x, 
-				ship.y, 
-				ship.width, 
-				ship.height
-			);
+			ship.x, 
+			ship.y, 
+			ship.width, 
+			ship.height
+		);
+		this.ctx.strokeRect(
+			ship.x, 
+			ship.y, 
+			ship.width, 
+			ship.height 
+		);
 		this.ctx.restore();
 	},
 	moverIzquierda : function(){
@@ -196,8 +203,8 @@ game.clases.Enemigo = function(params){
 	this.type = "Enemigo";
 	this.x = params.x;
 	this.y = params.y;
-	this.height = params.height;
-	this.width = params.width;
+	this.height = params.conf.height;
+	this.width = params.conf.width;
 	this.estado = 'vivo';
 	this.contador = params.contador;
 	this.scope = params.scope;
@@ -222,15 +229,23 @@ game.clases.Enemigo.prototype = {
 	},
 	dibujar : function(scope){
 		var that = this;
-		if (this.estado == 'vivo') scope.ctx.fillStyle = 'red';
+		if (this.estado == 'vivo') scope.ctx.fillStyle = this.conf.colors.fill;
 		if (this.estado == 'muerto'){
 			scope.ctx.fillStyle = 'blue';
 			window.setTimeout(function(){
 				that.morir(scope);
 			}, 12);
-		} 
+		};
+		scope.ctx.strokeStyle = this.conf.colors.stroke;
 		scope.ctx.save();
+
 		scope.ctx.fillRect(
+				this.x, 
+				this.y, 
+				this.width, 
+				this.height 
+			);
+		scope.ctx.strokeRect(
 				this.x, 
 				this.y, 
 				this.width, 
@@ -339,6 +354,10 @@ game.clases.Button.prototype = {
 		scope.ctx.textBaseline = this.text.baseLine;
 		scope.ctx.font = this.text.font;
 		scope.ctx.textAlign = this.text.textAlign;
+		scope.ctx.shadowColor   = 'rgba(0,0,0,0)';
+        scope.ctx.shadowOffsetX = 0;
+        scope.ctx.shadowOffsetY = 0;
+        scope.ctx.shadowBlur    = 0;
   		scope.ctx.fillText(this.text.caption, (this.x + this.width/2), (this.y + this.height/2) );
 		scope.ctx.restore();
 	},
