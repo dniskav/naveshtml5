@@ -92,7 +92,7 @@ game.clases.Nave.prototype = {
 			width = disparo.w,
 			height = disparo.h;
 		if(nave.estado == 'eliminado' || this.estado != 'jugando') return;
-		this.disparos.push(this.factory('Disparo', {
+		this.disparos.push(this.factory.create('Disparo', {
 				shooter : nave.type,
 				x : x,
 				y : y,
@@ -280,7 +280,7 @@ game.clases.Enemigo.prototype = {
 			y = clase.y + clase.height,
 			width = conf.w,
 			height = conf.h;
-		scope.disparos.push(scope.factory('Disparo', {
+		scope.disparos.push(scope.factory.create('Disparo', {
 				shooter : this.type,
 				x : x,
 				y : y,
@@ -319,8 +319,7 @@ game.clases.Button.prototype = {
 		this.init();
 	},
 	click : function(){
-		// this.color.act = this.color.p;
-		this.clickOpt.callout(this);
+		this.clickOpt.callout(this, this.scope);
 	},
 	mousedown : function(){
 		this.color.act = this.color.p;
@@ -371,6 +370,8 @@ game.clases.Button.prototype = {
 	},
 };
 
-game.factory = function(type, params){
-	return new this.clases[type](params);
-}
+// game.factory = function(type, params){
+// 	return new this.clases[type](params);
+// }
+
+

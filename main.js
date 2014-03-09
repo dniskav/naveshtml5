@@ -1,115 +1,13 @@
 var game = window.game || {};
 
-game = {
-	gameContainer : '',
-	canvas : {},
-	ctx : {},
-	assets : {
-		fondo : {}
-	},
-	intervalo : {},
-	conf : {
-		shadows : {
-			c : 'rgba(0,0,0,0.8)',
-			x : 0,
-			y : 0,
-			b : 10
-		},
-		nave : {
-			x : 100,
-			y : 0,
-			height : 50,
-			width : 50,
-			vel : 6,
-			colors :{
-				fill : '#FFFFFF',
-				stroke : '#AAAAAA',
-				shadows : {
-					c : 'rgba(0,0,0,0.8)',
-					x : 0,
-					y : 0,
-					b : 10
-				}
-			},
-			range : 0,
-			disparo : {
-				vel : 2,
-				w : 3,
-				h : 10
-			},
-		},
-		enemigo : {
-			x : 100,
-			y : 0,
-			height : 50,
-			width : 50,
-			vel : 6,
-			colors :{
-				fill : '#FF0000',
-				stroke : '#AA0000',
-				shadows : {
-					c : 'rgba(0,0,0,0.8)',
-					x : 0,
-					y : 0,
-					b : 10
-				}
-			},
-			range : 0,
-			disparo : {
-				vel : 2,
-				w : 3,
-				h : 10
-			}	
-		},
-		general : {
-			vel : 24
-		},
-		cantidadEnemigos : 10,
-		enemigosYpos : 10
-	},
-	libreria : [],
-	loop : {},
-	loopItems : [],
-	nave : {},
-	clases : {},
-	enemigos : [],
-	disparos : [],
-	teclado : [],
-	touch : false,
-	tecladoFire : false,
-	estado : 'iniciando'
-};
-
 game.init = function(){
+	this.factory = new Factory(this.clases);
+	
 	var that = this,
+		startButton = this.factory.create('Button',this.conf.buttons.startButton);
+	
 		load = window.addEventListener('load', function(){ 
-			var startButton = that.factory('Button', {
-				x : 350, y : 200, width : 100, height : 50, 
-				color : {
-					n : 'white',
-					h : 'gray',
-					p : 'blue'
-				}, 
-				scope : that,
-				text : {
-					color : {
-						n : 'silver',
-						h : 'white',
-						p : 'red'
-					},  
-					font: "normal 12px Arial", 
-					caption: 'Ipsum..', 
-					baseLine : 'middle', 
-					textAlign: 'center'
-				}, 
-				click : {
-					callout: function(el){
-						that.start();
-						el.remove();
-					}, 
-					scope: that
-				} 
-			});
+
 			that.gameContainer = q('#game-container');
 			that.gameContainer.append("<canvas id='game' width='800' height='400'>Tu navegador no soporta canvas</canvas>");
 			that.canvas = q('#game');
@@ -121,11 +19,12 @@ game.init = function(){
 			that.loadMedia();
 			that.addListeners();
 			that.conf.nave.y = that.canvas.height - that.conf.nave.height - (that.conf.nave.height / 4);
-			that.nave = that.factory('Nave');
+			that.nave = that.factory.create('Nave');
 			that.nave.init(that.conf.nave);
 			that.enemigos = that.crearEnemigos();
+
 			that.libreria.push(startButton);
-			that.loop = that.factory('FrameLoop');
+			that.loop = that.factory.create('FrameLoop');
 		});
 }
 
@@ -241,7 +140,7 @@ game.crearEnemigos = function(){
 				y = this.conf.enemigosYpos,
 				width = conf.width,
 				height = conf.height;
-			enemigos.push(this.factory('Enemigo',{
+			enemigos.push(this.factory.create('Enemigo',{
 				conf : conf,
 				x : x,
 				y : y,
@@ -279,7 +178,7 @@ game.stopEnemies = function(){
 
 game.dibujarLibreria = function(){
 	for (var i in this.libreria) {
-		this.libreria[i].render(this);
+		if(this.libreria[i].render) this.libreria[i].render(this);
 	}
 };
 
