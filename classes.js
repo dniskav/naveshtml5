@@ -1,11 +1,76 @@
 var game = window.game || {}
 
+game.clases.Clip = function(params){
+	var p = params || {}; 
+
+	this.conf = p.conf || {};
+	this.color = p.color || {
+		n : 'silver',
+		h : 'gray',
+		p : 'black'
+	};
+	this.text = p.text || {
+		color : {
+			n : 'white',
+			h : 'black',
+			p : 'white'
+		},  
+		font: "normal 12px Arial", 
+		caption: '', 
+		baseLine : 'top', 
+		textAlign: 'left'
+	};
+	this.scope = p.scope || this;
+	this.x = p.x || 10;
+	this.y = p.y || 10;
+	this.height = p.height || 30;
+	this.width = p.width || 30;
+	this.onStage = true;
+}
+
+game.clases.Clip.prototype = {
+	init : function(){
+		this.updateBounds();
+		this.color.act = this.color.n;
+		this.text.color.act = this.text.color.n;
+	},
+	updateBounds : function(){
+		this.range = {
+			x1 : this.x,
+			y1 : this.y,
+			x2 : this.x + this.width,
+			y2 : this.y + this.height
+		};
+	},
+	render : function(scope){
+		if(!this.onStage)return;
+		scope.ctx.fillStyle = this.color.act;
+		scope.ctx.save();
+		scope.ctx.fillRect(
+				this.x, 
+				this.y, 
+				this.width, 
+				this.height 
+			);
+		scope.ctx.fillStyle = this.text.color.act;
+		scope.ctx.textBaseline = this.text.baseLine;
+		scope.ctx.font = this.text.font;
+		scope.ctx.textAlign = this.text.textAlign;
+		scope.ctx.shadowColor   = 'rgba(0,0,0,0)';
+        scope.ctx.shadowOffsetX = 0;
+        scope.ctx.shadowOffsetY = 0;
+        scope.ctx.shadowBlur    = 0;
+  		scope.ctx.fillText(this.text.caption, (this.x + this.width/2), (this.y + this.height/2) );
+		scope.ctx.restore();
+	}
+}
+
 game.clases.FrameLoop = function(){};
 
 game.clases.FrameLoop.prototype.init = function(){
 	var that = this;
 	this.drawBackground();
-	if(this.nave.estado != 'eliminado')this.nave.dibujar.apply(this);
+	if(this.nave.estado != 'eliminado')this.nave.render.apply(this);
 	this.tecladoListener();
 	this.dibujarEnemigos();
 	this.dibujarDisparos();
@@ -26,6 +91,7 @@ game.clases.FrameLoop.prototype.init = function(){
 game.clases.Nave = function(){
 
 };	
+
 game.clases.Nave.prototype = {
 	init : function(conf){
 		this.conf = conf;
@@ -39,10 +105,12 @@ game.clases.Nave.prototype = {
 		this.range = conf.range;
 		this.type = "Nave";
 		this.updateBounds();
+		this.onStage = true;
 
 		return this;
 	},
-	dibujar : function(){
+	render : function(){
+		if(!this.onStage)return;
 		var that = this,
 			ship = this.nave;
 			if(ship.estado == 'eliminado') return;
@@ -113,6 +181,7 @@ game.clases.Nave.prototype = {
 	},
 	morir : function(){
 		this.estado = 'eliminado';
+		this.onStage = false;
 	},
 	animMorir : function(){
 
@@ -296,13 +365,12 @@ game.clases.Enemigo.prototype = {
 	}
 }
 
-
 game.clases.Button = function(params){
+	this.x = params.x || 10;
+	this.y = params.y || 10;
+	this.height = params.height || 30;
+	this.width = params.width || 30;
 	this.scope = params.scope;
-	this.x = params.x || 0;
-	this.y = params.y || 0;
-	this.width = params.width || 0;
-	this.height = params.height || 0;
 	this.color = params.color || {n : 'silver', h : 'gray', p : 'white'};
 	this.text = params.text || {};
 	this.clickOpt = params.click;
@@ -310,11 +378,6 @@ game.clases.Button = function(params){
 };
 
 game.clases.Button.prototype = {
-	init :function(){
-		this.updateBounds();
-		this.color.act = this.color.n;
-		this.text.color.act = this.text.color.n;
-	},
 	defaultState : function(){
 		this.init();
 	},
@@ -339,39 +402,7 @@ game.clases.Button.prototype = {
 	hover : function(){
 		this.color.act = this.color.h;
 		this.text.color.act = this.text.color.h;
-	},
-	render : function(scope){
-		scope.ctx.fillStyle = this.color.act;
-		scope.ctx.save();
-		scope.ctx.fillRect(
-				this.x, 
-				this.y, 
-				this.width, 
-				this.height 
-			);
-		scope.ctx.fillStyle = this.text.color.act;
-		scope.ctx.textBaseline = this.text.baseLine;
-		scope.ctx.font = this.text.font;
-		scope.ctx.textAlign = this.text.textAlign;
-		scope.ctx.shadowColor   = 'rgba(0,0,0,0)';
-        scope.ctx.shadowOffsetX = 0;
-        scope.ctx.shadowOffsetY = 0;
-        scope.ctx.shadowBlur    = 0;
-  		scope.ctx.fillText(this.text.caption, (this.x + this.width/2), (this.y + this.height/2) );
-		scope.ctx.restore();
-	},
-	updateBounds : function(){
-		this.range = {
-			x1 : this.x,
-			y1 : this.y,
-			x2 : this.x + this.width,
-			y2 : this.y + this.height
-		};
-	},
+	}
 };
 
-// game.factory = function(type, params){
-// 	return new this.clases[type](params);
-// }
-
-
+q.extend(game.clases.Button, game.clases.Clip);

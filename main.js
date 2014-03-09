@@ -19,8 +19,8 @@ game.init = function(){
 			that.loadMedia();
 			that.addListeners();
 			that.conf.nave.y = that.canvas.height - that.conf.nave.height - (that.conf.nave.height / 4);
-			that.nave = that.factory.create('Nave');
-			that.nave.init(that.conf.nave);
+
+			that.nave = that.factory.create('Nave').init(that.conf.nave);
 			that.enemigos = that.crearEnemigos();
 
 			that.libreria.push(startButton);
