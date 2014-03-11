@@ -4,8 +4,8 @@ game.init = function(){
 	this.factory = new Factory(this.clases);
 	
 	var that = this,
-		startButton = this.factory.create('Button',this.conf.buttons.startButton),
-		nave = that.factory.create('Nave', this.conf.nave, this);
+		startButton = this.factory.create('Button',this.conf.buttons.startButton);
+		this.nave = that.factory.create('Nave', this.conf.nave, this);
 	
 		load = window.addEventListener('load', function(){ 
 
@@ -19,12 +19,12 @@ game.init = function(){
 	        that.ctx.shadowBlur    = that.conf.shadows.b;
 			that.loadMedia();
 			that.addListeners();
-			that.conf.nave.y = that.canvas.height - that.conf.nave.height - (that.conf.nave.height / 4);
+			that.nave.y = that.canvas.height - that.conf.nave.height - (that.conf.nave.height / 4);
 
 			that.enemigos = that.crearEnemigos();
 
 			that.libreria.push(startButton);
-			that.libreria.push(nave);
+			that.libreria.push(that.nave);
 			that.loop = that.factory.create('FrameLoop', {}, that);
 		});
 }
@@ -94,15 +94,16 @@ game.addTouchAndMove = function(scope){
 }
 
 game.tecladoListener = function(){
+	var nave = this.libreria[this.libreria.indexOf(this.nave)];
 	if(this.teclado[37]){//left
-		this.nave.moverIzquierda.apply(this);
+		nave.moverIzquierda(this);
 	}
 	if(this.teclado[39]){//right
-		this.nave.moverDerecha.apply(this);
+		nave.moverDerecha(this);
 	};
 	if(this.teclado[32]){//fire
 		if(!this.tecladoFire){
-			this.nave.fire.apply(this);
+			nave.fire(this);
 			this.tecladoFire = true;
 		}
 	}else{

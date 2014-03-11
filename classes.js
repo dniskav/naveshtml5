@@ -117,22 +117,22 @@ game.clases.Nave.prototype = {
 			}, 12);
 		};
 	},
-	moverIzquierda : function(){
-		if(this.nave.estado == 'eliminado' || this.estado != 'jugando') return;
-		this.nave.x -= this.nave.vel;
-		if(this.nave.x < 0) this.nave.x = 0;
-		this.nave.updateBounds();
+	moverIzquierda : function(scope){
+		if(this.estado == 'eliminado' || scope.estado != 'jugando') return;
+		this.x -= this.vel;
+		if(this.x < 0) this.x = 0;
+		this.updateBounds();
 	},
-	moverDerecha : function(){
-		if(this.nave.estado == 'eliminado' || this.estado != 'jugando') return;
-		var limite = this.canvas.width - this.nave.width;
-		this.nave.x += this.nave.vel;
+	moverDerecha : function(scope){
+		if(this.estado == 'eliminado' || scope.estado != 'jugando') return;
+		var limite = scope.canvas.width - this.width;
+		this.x += this.vel;
 
-		if(this.nave.x > limite) this.nave.x = limite;
-		this.nave.updateBounds();
+		if(this.x > limite) this.x = limite;
+		this.updateBounds();
 	},
-	fire : function(){
-		var nave = this.nave,
+	fire : function(scope){
+		var nave = this,
 			disparo = nave.conf.disparo,
 			x = nave.x + (nave.width/2),
 			y = nave.y - disparo.h,
