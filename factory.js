@@ -3,12 +3,8 @@ var Factory = function(classes){
 };
 
 Factory.prototype = {
-	create : function(type, params){
+	create : function(type, params, scope){
+		params.scope = params.scope || scope || this;
 		return new this.classes[type](params);
-	},
-	extend : function (ChildClass, ParentClass) {
-		var act = this;
-		ChildClass.prototype = new ParentClass();
-		ChildClass.prototype.constructor = ChildClass;
 	}
 };

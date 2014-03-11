@@ -4,7 +4,8 @@ game.init = function(){
 	this.factory = new Factory(this.clases);
 	
 	var that = this,
-		startButton = this.factory.create('Button',this.conf.buttons.startButton);
+		startButton = this.factory.create('Button',this.conf.buttons.startButton),
+		nave = that.factory.create('Nave', this.conf.nave, this);
 	
 		load = window.addEventListener('load', function(){ 
 
@@ -20,11 +21,11 @@ game.init = function(){
 			that.addListeners();
 			that.conf.nave.y = that.canvas.height - that.conf.nave.height - (that.conf.nave.height / 4);
 
-			that.nave = that.factory.create('Nave').init(that.conf.nave);
 			that.enemigos = that.crearEnemigos();
 
 			that.libreria.push(startButton);
-			that.loop = that.factory.create('FrameLoop');
+			that.libreria.push(nave);
+			that.loop = that.factory.create('FrameLoop', {}, that);
 		});
 }
 
@@ -54,40 +55,20 @@ game.keyup = function(e){
 game.addListeners = function(){
 	var that = this;
 	that.canvas.on('click mousemove mousedown mouseup', function(e){
-		// console.log('coords: ', e.layerX, e.layerY);
-		var libreriaOjb = that.libreria.filter(function(item){
+		var theEvent,
+			libreriaOjb = that.libreria.filter(function(item){
 			var matchX = e.layerX > item.x &&   e.layerX < (item.x + item.width),
 				matchY = e.layerY > item.y &&   e.layerY < (item.y + item.height);
-			return  matchY && matchX;
+			return  matchY && matchX && typeof item[e.type] === 'function';
 		});
-		switch(e.type){
-			case 'click':
-				if(libreriaOjb[0]) {
-					libreriaOjb[0].click()
-				};
-			break;
+		theEvent = e.type
 
-			case 'mousemove':
-				for (var ndx in that.libreria) {
-					that.libreria[ndx].defaultState();
-				};
-				if(libreriaOjb[0]) {
-					libreriaOjb[0].hover();
-				};
-			break;
-
-			case 'mousedown':
-				if(libreriaOjb[0]) {
-					libreriaOjb[0].mousedown();
-				};
-			break;
-
-			case 'mouseup':
-				if(libreriaOjb[0]) {
-					libreriaOjb[0].mouseup();
-				};
-			break;
-		}
+		for (var ndx in that.libreria) {
+			try{
+				that.libreria[ndx].defaultState();
+				libreriaOjb[ndx][theEvent]();
+			}catch(err){}
+		};
 	});
 	q(document).on('keydown', this.keydown);
 	q(document).on('keyup', this.keyup);

@@ -1,5 +1,29 @@
 var game = window.game || {}
 
+
+game.clases.FrameLoop = function(){};
+
+game.clases.FrameLoop.prototype.init = function(){
+	var that = this;
+	this.drawBackground();
+	this.tecladoListener();
+	this.dibujarEnemigos();
+	this.dibujarDisparos();
+	this.dibujarLibreria();
+	if(this.estado == 'jugando'){
+		for (var ndx in this.disparos) {
+			if (this.disparos.length > 0) {
+				try {
+					this.disparos[ndx].mover();
+				}catch(err){}
+			}
+			this.disparos = this.disparos.filter(function(disparo){
+				return disparo.y > 0 && disparo.range.y2 < that.canvas.attr('height');
+			});
+		}
+	}
+}	
+
 game.clases.Clip = function(params){
 	var p = params || {}; 
 
@@ -33,6 +57,7 @@ game.clases.Clip.prototype = {
 		this.updateBounds();
 		this.color.act = this.color.n;
 		this.text.color.act = this.text.color.n;
+		return this;
 	},
 	updateBounds : function(){
 		this.range = {
@@ -56,7 +81,7 @@ game.clases.Clip.prototype = {
 		scope.ctx.textBaseline = this.text.baseLine;
 		scope.ctx.font = this.text.font;
 		scope.ctx.textAlign = this.text.textAlign;
-		scope.ctx.shadowColor   = 'rgba(0,0,0,0)';
+		scope.ctx.shadowColor   = scope.ctx.shadowColor || 'rgba(0,0,0,0)';
         scope.ctx.shadowOffsetX = 0;
         scope.ctx.shadowOffsetY = 0;
         scope.ctx.shadowBlur    = 0;
@@ -65,78 +90,32 @@ game.clases.Clip.prototype = {
 	}
 }
 
-game.clases.FrameLoop = function(){};
-
-game.clases.FrameLoop.prototype.init = function(){
-	var that = this;
-	this.drawBackground();
-	if(this.nave.estado != 'eliminado')this.nave.render.apply(this);
-	this.tecladoListener();
-	this.dibujarEnemigos();
-	this.dibujarDisparos();
-	this.dibujarLibreria();
-	if(this.estado == 'jugando'){
-		for (var ndx in this.disparos) {
-			if (this.disparos.length > 0) {
-				try {
-					this.disparos[ndx].mover();
-				}catch(err){}
-			}
-			this.disparos = this.disparos.filter(function(disparo){
-				return disparo.y > 0 && disparo.range.y2 < that.canvas.attr('height');
-			});
-		}
-	}
-}
-game.clases.Nave = function(){
-
-};	
+game.clases.Nave = function(params){
+	this.x = params.x || 10;
+	this.y = params.y || 10;
+	this.height = params.height || 30;
+	this.width = params.width || 30;
+	this.scope = params.scope;
+	this.color = params.color || {n : 'silver', h : 'gray', p : 'white'};
+	this.clickOpt = params.click;
+	this.estado = 'vivo';
+	this.vel = params.vel;
+	this.type = "Nave";
+	this.init();
+};
 
 game.clases.Nave.prototype = {
-	init : function(conf){
-		this.conf = conf;
-		this.estado = 'vivo';
-		this.x = conf.x;
-		this.y = conf.y;
-		this.height = conf.height;
-		this.width = conf.width;
-		this.vel = conf.vel;
-		this.fill = conf.fill;
-		this.range = conf.range;
-		this.type = "Nave";
-		this.updateBounds();
-		this.onStage = true;
-
-		return this;
-	},
-	render : function(){
-		if(!this.onStage)return;
+	dibujar : function(scope){
 		var that = this,
-			ship = this.nave;
-			if(ship.estado == 'eliminado') return;
-
-		if (ship.estado == 'vivo') this.ctx.fillStyle = ship.conf.colors.fill;
+		ship = scope.nave;
+		if(ship.estado == 'eliminado') return;
+		if (ship.estado == 'vivo') scope.ctx.fillStyle = ship.conf.colors.fill;
 		if (ship.estado == 'muerto'){
-			this.ctx.fillStyle = 'red';
+			scope.ctx.fillStyle = 'red';
 			window.setTimeout(function(){
-				that.nave.morir();
+				scope.nave.morir();
 			}, 12);
 		};
-		this.ctx.strokeStyle = ship.conf.colors.stroke;
-		this.ctx.save();
-		this.ctx.fillRect(
-			ship.x, 
-			ship.y, 
-			ship.width, 
-			ship.height
-		);
-		this.ctx.strokeRect(
-			ship.x, 
-			ship.y, 
-			ship.width, 
-			ship.height 
-		);
-		this.ctx.restore();
 	},
 	moverIzquierda : function(){
 		if(this.nave.estado == 'eliminado' || this.estado != 'jugando') return;
@@ -171,22 +150,14 @@ game.clases.Nave.prototype = {
 			})
 		);
 	},
-	updateBounds : function(){
-		this.range = {
-			x1 : this.x,
-			y1 : this.y,
-			x2 : this.x + this.width,
-			y2 : this.y + this.height
-		};
-	},
 	morir : function(){
 		this.estado = 'eliminado';
 		this.onStage = false;
-	},
-	animMorir : function(){
-
 	}
 }
+
+q.extend(game.clases.Nave, game.clases.Clip);
+
 game.clases.Disparo = function(params){
 	this.shooter = params.shooter;
 	this.scope = params.scope;
@@ -399,7 +370,7 @@ game.clases.Button.prototype = {
 		this.color.act = this.color.n;
 		this.text.color.act = this.text.color.n;
 	},
-	hover : function(){
+	mousemove : function(){
 		this.color.act = this.color.h;
 		this.text.color.act = this.text.color.h;
 	}
