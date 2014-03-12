@@ -64,9 +64,14 @@ game.addListeners = function(){
 		theEvent = e.type
 
 		for (var ndx in that.libreria) {
+			if(that.libreria[ndx].defaultState) {
+				that.libreria[ndx].defaultState()
+			};
 			try{
-				that.libreria[ndx].defaultState();
-				libreriaOjb[ndx][theEvent]();
+				if(libreriaOjb[ndx][theEvent]){
+					libreriaOjb[ndx][theEvent]();
+				}
+
 			}catch(err){}
 		};
 	});

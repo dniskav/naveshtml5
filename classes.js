@@ -55,7 +55,7 @@ game.clases.Clip = function(params){
 game.clases.Clip.prototype = {
 	init : function(){
 		this.updateBounds();
-		this.color.act = this.color.n;
+		this.color.act = this.color.n || this.color.fill;
 		this.text.color.act = this.text.color.n;
 		return this;
 	},
@@ -70,6 +70,7 @@ game.clases.Clip.prototype = {
 	render : function(scope){
 		if(!this.onStage)return;
 		scope.ctx.fillStyle = this.color.act;
+		this.color.shadows = this.color.shadows || {};
 		scope.ctx.save();
 		scope.ctx.fillRect(
 				this.x, 
@@ -81,10 +82,10 @@ game.clases.Clip.prototype = {
 		scope.ctx.textBaseline = this.text.baseLine;
 		scope.ctx.font = this.text.font;
 		scope.ctx.textAlign = this.text.textAlign;
-		scope.ctx.shadowColor   = scope.ctx.shadowColor || 'rgba(0,0,0,0)';
-        scope.ctx.shadowOffsetX = 0;
-        scope.ctx.shadowOffsetY = 0;
-        scope.ctx.shadowBlur    = 0;
+		scope.ctx.shadowColor   = this.color.shadows.c || scope.ctx.shadowColor || 'rgba(0,0,0,0)';
+        scope.ctx.shadowOffsetX = this.color.shadows.x || scope.ctx.shadowOffsetX || 0;
+        scope.ctx.shadowOffsetY = this.color.shadows.y || scope.ctx.shadowOffsetY || 0;;
+        scope.ctx.shadowBlur    = this.color.shadows.b || scope.ctx.shadowOffsetBlur || 0;;
   		scope.ctx.fillText(this.text.caption, (this.x + this.width/2), (this.y + this.height/2) );
 		scope.ctx.restore();
 	}
@@ -96,8 +97,9 @@ game.clases.Nave = function(params){
 	this.height = params.height || 30;
 	this.width = params.width || 30;
 	this.scope = params.scope;
-	this.color = params.color || {n : 'silver', h : 'gray', p : 'white'};
+	this.color = params.colors;
 	this.clickOpt = params.click;
+	this.disparo = params.disparo || {};
 	this.estado = 'vivo';
 	this.vel = params.vel;
 	this.type = "Nave";
@@ -133,20 +135,20 @@ game.clases.Nave.prototype = {
 	},
 	fire : function(scope){
 		var nave = this,
-			disparo = nave.conf.disparo,
+			disparo = nave.disparo,
 			x = nave.x + (nave.width/2),
 			y = nave.y - disparo.h,
 			width = disparo.w,
 			height = disparo.h;
-		if(nave.estado == 'eliminado' || this.estado != 'jugando') return;
-		this.disparos.push(this.factory.create('Disparo', {
+		if(nave.estado == 'eliminado' || scope.estado != 'jugando') return;
+		scope.disparos.push(scope.factory.create('Disparo', {
 				shooter : nave.type,
 				x : x,
 				y : y,
 				width : width,
 				height : height,
 				vel : disparo.vel,
-				scope : this
+				scope : scope
 			})
 		);
 	},
