@@ -99,3 +99,26 @@ function q(el){
 	obj.append = append;
 	return obj;
 };
+
+q.extend = function(ChildClass, ParentClass) {
+	var dummyClass = ChildClass.prototype;
+	ChildClass.prototype = new ParentClass();
+	for (var prop in dummyClass) {
+		if (dummyClass.hasOwnProperty(prop)) {
+			ChildClass.prototype[prop] = dummyClass[prop];
+		}
+	}
+	ChildClass.prototype.constructor = ChildClass;
+};
+
+q.arrayRemove = function(array, element){
+	if(typeof element === 'number'){
+		delete array[element];
+	}else if(typeof element === 'object'){
+		delete array[array.indexOf(element)];
+	}else{
+		return;
+	}
+	return array.filter(function(el){ return typeof el !== 'undefined'});
+}
+

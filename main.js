@@ -5,6 +5,7 @@ game.init = function(){
 	
 	var that = this,
 		startButton = this.factory.create('Button',this.conf.buttons.startButton);
+		this.nave = that.factory.create('Nave', this.conf.nave, this);
 	
 		load = window.addEventListener('load', function(){ 
 
@@ -18,13 +19,13 @@ game.init = function(){
 	        that.ctx.shadowBlur    = that.conf.shadows.b;
 			that.loadMedia();
 			that.addListeners();
-			that.conf.nave.y = that.canvas.height - that.conf.nave.height - (that.conf.nave.height / 4);
-			that.nave = that.factory.create('Nave');
-			that.nave.init(that.conf.nave);
+			that.nave.y = that.canvas.height - that.conf.nave.height - (that.conf.nave.height / 4);
+
 			that.enemigos = that.crearEnemigos();
 
 			that.libreria.push(startButton);
-			that.loop = that.factory.create('FrameLoop');
+			that.libreria.push(that.nave);
+			that.loop = that.factory.create('FrameLoop', {}, that);
 		});
 }
 
@@ -54,40 +55,25 @@ game.keyup = function(e){
 game.addListeners = function(){
 	var that = this;
 	that.canvas.on('click mousemove mousedown mouseup', function(e){
-		// console.log('coords: ', e.layerX, e.layerY);
-		var libreriaOjb = that.libreria.filter(function(item){
+		var theEvent,
+			libreriaOjb = that.libreria.filter(function(item){
 			var matchX = e.layerX > item.x &&   e.layerX < (item.x + item.width),
 				matchY = e.layerY > item.y &&   e.layerY < (item.y + item.height);
-			return  matchY && matchX;
+			return  matchY && matchX && typeof item[e.type] === 'function';
 		});
-		switch(e.type){
-			case 'click':
-				if(libreriaOjb[0]) {
-					libreriaOjb[0].click()
-				};
-			break;
+		theEvent = e.type
 
-			case 'mousemove':
-				for (var ndx in that.libreria) {
-					that.libreria[ndx].defaultState();
-				};
-				if(libreriaOjb[0]) {
-					libreriaOjb[0].hover();
-				};
-			break;
+		for (var ndx in that.libreria) {
+			if(that.libreria[ndx].defaultState) {
+				that.libreria[ndx].defaultState()
+			};
+			try{
+				if(libreriaOjb[ndx][theEvent]){
+					libreriaOjb[ndx][theEvent]();
+				}
 
-			case 'mousedown':
-				if(libreriaOjb[0]) {
-					libreriaOjb[0].mousedown();
-				};
-			break;
-
-			case 'mouseup':
-				if(libreriaOjb[0]) {
-					libreriaOjb[0].mouseup();
-				};
-			break;
-		}
+			}catch(err){}
+		};
 	});
 	q(document).on('keydown', this.keydown);
 	q(document).on('keyup', this.keyup);
@@ -113,15 +99,16 @@ game.addTouchAndMove = function(scope){
 }
 
 game.tecladoListener = function(){
+	var nave = this.libreria[this.libreria.indexOf(this.nave)];
 	if(this.teclado[37]){//left
-		this.nave.moverIzquierda.apply(this);
+		nave.moverIzquierda(this);
 	}
 	if(this.teclado[39]){//right
-		this.nave.moverDerecha.apply(this);
+		nave.moverDerecha(this);
 	};
 	if(this.teclado[32]){//fire
 		if(!this.tecladoFire){
-			this.nave.fire.apply(this);
+			nave.fire(this);
 			this.tecladoFire = true;
 		}
 	}else{
@@ -166,7 +153,7 @@ game.drawBackground = function(){
 
 game.dibujarDisparos = function(){
 	for(var i in this.disparos){
-		this.disparos[i].dibujar();
+		this.disparos[i].render();
 	}
 }
 
