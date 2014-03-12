@@ -11,15 +11,21 @@ game.clases.FrameLoop.prototype.init = function(){
 	this.dibujarDisparos();
 	this.dibujarLibreria();
 	if(this.estado == 'jugando'){
-		for (var ndx in this.disparos) {
-			if (this.disparos.length > 0) {
-				try {
-					this.disparos[ndx].mover();
-				}catch(err){}
-			}
-			this.disparos = this.disparos.filter(function(disparo){
-				return disparo.y > 0 && disparo.range.y2 < that.canvas.attr('height');
-			});
+		var disparos = this.libreria.filter(function(disparo){
+			return disparo instanceof game.clases.Disparo;
+		});
+		for (var ndx in disparos) {
+			var disparo = disparos[ndx], 
+				disparoNdx = this.libreria.indexOf(disparo);
+
+			try {
+				disparo.mover();
+			}catch(err){}
+
+			if(disparo.y < 0 || disparo.range.y2 > that.canvas.attr('height')){
+				this.libreria = q.arrayRemove(this.libreria, disparoNdx);
+			};
+
 		}
 	}
 }	
@@ -141,7 +147,7 @@ game.clases.Nave.prototype = {
 			width = disparo.w,
 			height = disparo.h;
 		if(nave.estado == 'eliminado' || scope.estado != 'jugando') return;
-		scope.disparos.push(scope.factory.create('Disparo', {
+		scope.libreria.push(scope.factory.create('Disparo', {
 				shooter : nave.type,
 				x : x,
 				y : y,
@@ -168,11 +174,19 @@ game.clases.Disparo = function(params){
 	this.width = params.width;
 	this.height = params.height;
 	this.vel = params.vel;
+	this.color = {};
 	this.init();
 };
 
 game.clases.Disparo.prototype = {
 	init : function(){
+		switch(this.shooter){
+			case "Nave":
+				this.color.n = "white";
+				break
+			case "Enemigo":
+				this.color.n = "red"
+		}
 		this.updateBounds();
 	},
 	mover : function(){
@@ -184,16 +198,9 @@ game.clases.Disparo.prototype = {
 		this.hitTest();
 		this.updateBounds();
 	},
-	dibujar : function(){
-		switch(this.shooter){
-			case "Nave":
-				var color = "white";
-				break
-			case "Enemigo":
-				var color = "red"
-		}
+	render : function(){
 		this.scope.ctx.save();
-		this.scope.ctx.fillStyle = color;
+		this.scope.ctx.fillStyle = this.color.n;
 		this.scope.ctx.fillRect(
 			this.x, 
 			this.y, 
@@ -213,7 +220,7 @@ game.clases.Disparo.prototype = {
 
 						if(hitX && hitY){
 							this.scope.enemigos[i].estado = 'muerto';
-							delete this.scope.disparos[this.scope.disparos.indexOf(this)];
+							delete this.scope.libreria[this.scope.libreria.indexOf(this)];
 						}
 					}
 				}
@@ -322,7 +329,7 @@ game.clases.Enemigo.prototype = {
 			y = clase.y + clase.height,
 			width = conf.w,
 			height = conf.h;
-		scope.disparos.push(scope.factory.create('Disparo', {
+		scope.libreria.push(scope.factory.create('Disparo', {
 				shooter : this.type,
 				x : x,
 				y : y,

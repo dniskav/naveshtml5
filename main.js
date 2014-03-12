@@ -153,7 +153,7 @@ game.drawBackground = function(){
 
 game.dibujarDisparos = function(){
 	for(var i in this.disparos){
-		this.disparos[i].dibujar();
+		this.disparos[i].render();
 	}
 }
 
