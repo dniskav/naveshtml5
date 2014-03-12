@@ -111,3 +111,14 @@ q.extend = function(ChildClass, ParentClass) {
 	ChildClass.prototype.constructor = ChildClass;
 };
 
+q.arrayRemove = function(array, element){
+	if(typeof element === 'number'){
+		delete array[element];
+	}else if(typeof element === 'object'){
+		delete array[array.indexOf(element)];
+	}else{
+		return;
+	}
+	return array.filter(function(el){ return typeof el !== 'undefined'});
+}
+
