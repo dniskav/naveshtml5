@@ -10,7 +10,7 @@ game.conf.nave = {
 	vel : 6,
 	colors :{
 		fill : '#FFFFFF',
-		stroke : '#AAAAAA',
+		stroke : '#00ff00',
 		shadows : {
 			c : 'rgba(0,0,0,0.8)',
 			x : 0,

@@ -28,7 +28,6 @@ game = {
 	nave : {},
 	clases : {},
 	enemigos : [],
-	disparos : [],
 	teclado : [],
 	touch : false,
 	tecladoFire : false,
