@@ -165,7 +165,7 @@ game.stopEnemies = function(){
 
 game.dibujarLibreria = function(){
 	for (var i in this.libreria) {
-		if(this.libreria[i].render) this.libreria[i].render(this);
+		if(this.libreria[i].eachFrame) this.libreria[i].eachFrame(this);
 	}
 };
 

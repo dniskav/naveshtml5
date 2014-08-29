@@ -73,11 +73,14 @@ game.clases.Clip.prototype = {
 			y2 : this.y + this.height
 		};
 	},
-	render : function(scope){
-		if(!this.onStage)return;
+	eachFrame : function(scope) {
 		if(typeof this.enterFrame === 'function'){
 			this.enterFrame();
-		}
+		};
+		this.render(scope);
+	},
+	render : function(scope){
+		if(!this.onStage)return;
 		scope.ctx.fillStyle = this.color.act;
 		this.color.shadows = this.color.shadows || {};
 		scope.ctx.save();
@@ -199,17 +202,6 @@ game.clases.Disparo.prototype = {
 		this.hitTest();
 		this.updateBounds();
 	},
-	render : function(){
-		this.scope.ctx.save();
-		this.scope.ctx.fillStyle = this.color.n;
-		this.scope.ctx.fillRect(
-			this.x, 
-			this.y, 
-			this.width, 
-			this.height
-		);
-		this.scope.ctx.restore();
-	},
 	hitTest : function(){
 		switch(this.shooter){
 			case "Nave":
@@ -237,16 +229,10 @@ game.clases.Disparo.prototype = {
 					};				
 			break;
 		}
-	},
-	updateBounds : function(){
-		this.range = {
-			x1 : this.x,
-			y1 : this.y,
-			x2 : this.x + this.width,
-			y2 : this.y + this.height
-		};
 	}
 }
+
+q.extend(game.clases.Disparo, game.clases.Clip);
 
 game.clases.Enemigo = function(params){
 	this.conf = params.conf;
