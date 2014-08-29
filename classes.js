@@ -75,6 +75,9 @@ game.clases.Clip.prototype = {
 	},
 	render : function(scope){
 		if(!this.onStage)return;
+		if(typeof this.enterFrame === 'function'){
+			this.enterFrame();
+		}
 		scope.ctx.fillStyle = this.color.act;
 		this.color.shadows = this.color.shadows || {};
 		scope.ctx.save();
@@ -113,15 +116,13 @@ game.clases.Nave = function(params){
 };
 
 game.clases.Nave.prototype = {
-	dibujar : function(scope){
+	enterFrame : function(){
 		var that = this,
-		ship = scope.nave;
-		if(ship.estado == 'eliminado') return;
-		if (ship.estado == 'vivo') scope.ctx.fillStyle = ship.conf.colors.fill;
+			ship = this.scope.nave;
 		if (ship.estado == 'muerto'){
-			scope.ctx.fillStyle = 'red';
+			this.scope.ctx.fillStyle = 'red';
 			window.setTimeout(function(){
-				scope.nave.morir();
+				ship.morir();
 			}, 12);
 		};
 	},
