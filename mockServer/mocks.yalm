@@ -1,0 +1,21 @@
+-  request:
+    url: /test
+    method: GET
+  response:
+    status: 200
+    headers:
+      content-type: application/json
+    file: mockServer/testGet.json
+    latency: 300
+
+-  request:
+    url: /test
+    method: POST
+    query:
+      param: "lorem"
+  response:
+    status: 200
+    headers:
+      content-type: application/json
+    file: mockServer/testPost.json
+    latency: 300
