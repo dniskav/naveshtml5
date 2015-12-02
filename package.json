@@ -1,0 +1,19 @@
+{
+  "name": "naveshtml5",
+  "version": "1.0.0",
+  "description": "Basic ship shooting game",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dniskav/naveshtml5.git"
+  },
+  "author": "dniskav",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dniskav/naveshtml5/issues"
+  },
+  "homepage": "https://github.com/dniskav/naveshtml5"
+}
