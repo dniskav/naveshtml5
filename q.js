@@ -61,15 +61,13 @@ function q(el){
 			}
 			return this;
 		}
-
-	if(new RegExp('[\#.<]').test(type)){
-		element = el.substring(1),
-		type = el.charAt(0);
-	}else if(type === document || type === window){
-		type = type;
+	if(el === document || el === window){
+		obj = el
 	}else{
-		type = '';		
+		obj = document.querySelectorAll(el);
+		obj = (obj.length > 1)? obj : obj[0];
 	};
+/*
 	switch(type){
 		case '<':
 			var ht = new DOMParser(),
@@ -92,7 +90,9 @@ function q(el){
 			obj = type;
 		break
 	};
+*/
 	
+
 	obj.on = on;
 	obj.html = html;
 	obj.attr = attr;
